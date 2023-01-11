@@ -96,6 +96,7 @@ class MainWidow:
     def goodbye(self):
         self.__logger.info("========== Ending " + constants.APP_NAME + " v" + constants.APP_VERSION + " ==========")
         self.on_stop()
+        time.sleep(1)
         self.app.destroy()
 
     def on_exit(self):
