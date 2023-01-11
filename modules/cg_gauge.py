@@ -4,16 +4,12 @@
  # @ License: MIT
  # @ Description: A load cell module
  '''
-
-
-import time
 import logging
 import constants
 from hx711 import HX711
 
 class CGModule ():
     def __init__(self):
-        #self.__running = False
         self.__name = "Unknown"
         self.__ratio = 0.0
         self.__dout_pin = 0
@@ -42,50 +38,6 @@ class CGModule ():
         except Exception as e:
             self.__logger.error("Error writing CGModule(%s) values: " + str(e), self.__name)
 
-    ''' Deprecate module threading
-    def displayValue(self, callback):
-        self.__logger.debug("CGModule(%s) started", self.__name)
-        self.__running = True
-        while self.__running:
-            weight = self.getWeight(10)
-            #self.__logger.info("CGModule(%s) weight:%.2f", self.__name, weight)
-            callback(self.__name, weight)
-            time.sleep(0.01)
-
-        callback(self.__name, 0.0)
-        #del self.__thread
-        self.__logger.debug("CGModule(%s) stopped", self.__name)
-        return
-    
-
-    def start(self, callback : callable):
-        try:
-            if not self.__initialized:
-                raise Exception("Not initialized")
-
-            self.__running = True
-            self.__thread = threading.Thread(name=f'CGModule{self.__name}Thread',target=self.displayValue, args=(callback,))
-            self.__thread.start()
-
-        except BaseException as e:
-            self.__logger.error("Error starting CGModule(%s): %s", self.__name,  str(e))
-
-    def stop(self):
-        try:
-            if not self.__initialized:
-                raise Exception("Not initialized")
-        
-            self.__running = False
-            #self.__thread.join()
-            #del self.__thread
-        
-        except BaseException as e:
-            self.__logger.error("Error stopping CGModule(%s): %s", self.__name,  str(e))
-
-    def wait(self):
-        self.__thread.join()
-    '''
-
     @property
     def name(self):
         return self.__name
@@ -106,17 +58,9 @@ class CGModule ():
     def position(self, value):
         self.__position = value
 
-    """
-    def loadConfig_Deprecated(self, configfilename : str, config : str = "Default"):
-        try:
-            with open(configfilename) as json_file:
-                data = json.load(json_file)
-                self.__name = config
-                self.__set_values__(data["Modules"][config])
-                
-        except Exception as e:
-            self.__logger.error("Error loading CGModule(%s) config: " + str(e), self.__name)
-    """
+    @property
+    def initialized(self):
+        return self.__initialized
 
     def loadConfig(self, config : str, module_cfg : dict):
         try:
@@ -133,22 +77,6 @@ class CGModule ():
 
         except Exception as e:
             self.__logger.error("Error saving CGModule(%s) config: %s", self.__name,  str(e))
-
-    """
-    def saveConfig_Deprecated(self, configfilename : str):
-        try:
-            
-            with open(configfilename, "r") as json_file:
-                data = json.load(json_file)
-            
-            self.__write_values__(data["Modules"][self.__name])
-
-            with open(configfilename, "w") as json_file:
-                json.dump(data, json_file, indent=4)
-        
-        except Exception as e:
-            self.__logger.error("Error saving CGModule(%s) config: " + str(e), self.__name)
-    """
 
     def initialize(self) -> bool:
         
