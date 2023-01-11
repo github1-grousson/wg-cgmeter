@@ -1,0 +1,37 @@
+{
+    "Modules": {
+        "LeftWheel": {
+            "position": [
+                0,
+                0
+            ],
+            "ratio": 467.82,
+            "gpio": {
+                "dt": 5,
+                "sck": 6
+            }
+        },
+        "RightWheel": {
+            "position": [
+                0,
+                0
+            ],
+            "ratio": 1.0,
+            "gpio": {
+                "dt": 27,
+                "sck": 6
+            }
+        },
+        "TailWheel": {
+            "position": [
+                0,
+                0
+            ],
+            "ratio": 1.0,
+            "gpio": {
+                "dt": 22,
+                "sck": 6
+            }
+        }
+    }
+}
