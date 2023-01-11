@@ -10,3 +10,6 @@ Just put the RC plane on the three load cells a read CG parameters on screen.
 ```bash
 pip3 install 'git+https://github.com/bytedisciple/HX711.git#egg=HX711&subdirectory=HX711_Python3'
 ```
+
+## History
+0.1.0 : it's a POC, it displays only weights of the load cells. Based on guizero (pip install guizero)
