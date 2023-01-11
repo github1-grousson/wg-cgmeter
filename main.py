@@ -1,11 +1,3 @@
-'''
- # @ Author: Wilfried Grousson
- # @ Created: 2023-01-11
- # @ License: MIT
- # @ Version: 0.1 POC
- # @ Description: the main application, use for POC, dispaly only weights on load cells
- '''
-
 from guizero import App, PushButton, Box, Text, TextBox, Drawing
 import logging
 import os
@@ -16,7 +8,6 @@ from modules import cg_meter
 import RPi.GPIO as GPIO
 
 """
-for remote debugging on pi
 export DISPLAY=:0;
 """
 
@@ -62,16 +53,16 @@ class MainWidow:
         # Content @ center
         self.content_box = Box(self.app, width="fill", align="top", border=False)
         self.message_box = Text(self.content_box, text="")
+        self.lwheel_value = Text(self.content_box, text="")
+        self.rwheel_value = Text(self.content_box, text="")
+        self.twheel_value = Text(self.content_box, text="")
+        self.tweight_value = Text(self.content_box, text="")
 
         
         self.form_box = Box(self.content_box, width="fill", align="left", border=False)
         #Text(self.form_box, grid=[0,1], text="Message:", align="left")
         
-        self.drawing_box = Box(self.form_box, width="fill", align="left", border=False)
-        drw = Drawing(self.drawing_box, width=500, height=300, align="left")
-        lwheel = drw.oval(50, 50, 150, 150, outline=True, color = "white")
-        self.lwheel_txt = drw.text(0, 0, "Left Wheel", color="black")
-
+        
         # Buttons @ bottom
         self.buttons_box = Box(self.app, width="fill", align="bottom", border=True)
         self.btn_exit = PushButton(self.buttons_box, text="Exit", command=self.on_exit, align="right", padx=50)
@@ -114,23 +105,25 @@ class MainWidow:
         self.btns["tare"].toggle()
         self.btns["cal"].toggle()
         self.app.update()
-        self.app.info("Calibrate", "Place the calibration weight on the LeftWheel scale")
-        value = self.app.question("Calibrate", "What is the weight of the calibration weight (in grams) ?")
-        try:
-            if value is not None:
-                weight = float(value)
-                self.__cgmeter.calibrate_module("LeftWheel", weight)
-                self.app.info("Calibrate", "Calibration complete, you can remove the weight")
-            
-        except ValueError:
-            reason = str.format(f'Expected integer or float and I have got:{ value}')
-            self.app.error("Calibrate", reason)
-        except BaseException as e:
-            msg = f"Calibration error : \n{str(e)}"
-            self.app.info("Calibrate", msg)
-        finally:
-            self.btns["tare"].toggle()
-            self.btns["cal"].toggle()
+        whichone = ['LeftWheel', 'RightWheel']
+        for w in whichone:    
+            self.app.info("Calibrate", f"Place the calibration weight on the {w} scale")
+            value = self.app.question("Calibrate", "What is the weight of the calibration weight (in grams) ?")
+            try:
+                if value is not None:
+                    weight = float(value)
+                    self.__cgmeter.calibrate_module(w, weight)
+                    self.app.info("Calibrate", "Calibration complete, you can remove the weight")
+                
+            except ValueError:
+                reason = str.format(f'Expected integer or float and I have got:{ value}')
+                self.app.error("Calibrate", reason)
+            except BaseException as e:
+                msg = f"Calibration error : \n{str(e)}"
+                self.app.info("Calibrate", msg)
+        
+        self.btns["tare"].toggle()
+        self.btns["cal"].toggle()
            
     def on_tare(self):
         self.btns["tare"].toggle()
@@ -148,20 +141,54 @@ class MainWidow:
             btn.disable()
         
         self.btns["stop"].enable()
-        self.__cgmeter.read(self.on_weight_update)
+        #self.__cgmeter.read_by_module(self.on_weight_update_module)
+        self.__cgmeter.start_reading(self.on_weights_update)
         
     def on_stop(self):
         for btn in self.btns.values():
             btn.enable()
         self.btns["stop"].disable()
-        self.__cgmeter.stop()
-                
-    def on_weight_update(self, name, weight):
+        #self.__cgmeter.stop_by_module()
+        self.__cgmeter.stop_reading()
+
+    def on_weights_update(self, weights):
         try:
-            self.message_box.value = f'{name}: {round(weight,1)} g' 
+            if weights is None:
+                self.rwheel_value.value = ""
+                self.lwheel_value.value = ""
+                self.twheel_value.value = ""
+                self.tweight_value.value = ""
+            else:
+                total_weight = 0
+                for mod_name, weight in weights.items():
+                    if mod_name == "LeftWheel":
+                        self.lwheel_value.value = f'{mod_name}: {round(weight,1)} g'
+                        total_weight += weight
+                    elif mod_name == "RightWheel":
+                        self.rwheel_value.value = f'{mod_name}: {round(weight,1)} g'
+                        total_weight += weight
+                    elif mod_name == "TailWheel":
+                        self.twheel_value.value = f'{mod_name}: {round(weight,1)} g'
+                        total_weight += weight
+                
+                self.tweight_value.value = f'Total weight: {round(total_weight,1)} g'
+
+                self.app.update()
+        except BaseException as e:
+                self.__logger.error("Error updating weights: " + str(e))
+
+                
+    def on_weight_update_module(self, name, weight):
+        try:
+            if name == "LeftWheel":
+                self.lwheel_value.value = f'{name}: {round(weight,1)} g'
+            elif name == "RightWheel":
+                self.rwheel_value.value = f'{name}: {round(weight,1)} g'
+            else:
+                self.message_box.value = f'{name}: Unknown module' 
             self.app.update()
         except BaseException as e:
-            pass
+            self.__logger.error("Error updating weight: " + str(e))
         
 if __name__ == "__main__":
     try:
