@@ -6,7 +6,10 @@
  '''
 import logging
 import constants
-from hx711 import HX711
+if not constants.EMULATE_HX711:
+    from hx711 import HX711
+else:
+    from modules.hx711_emulator import HX711
 
 class CGModule ():
     def __init__(self):
