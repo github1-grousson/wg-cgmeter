@@ -5,7 +5,9 @@ import constants
 import time
 from constants import LOG_LEVEL
 from modules import cg_meter
-import RPi.GPIO as GPIO
+if not constants.EMULATE_HX711:
+    import RPi.GPIO as GPIO
+
 
 """
 export DISPLAY=:0;
@@ -19,8 +21,10 @@ class MainWidow:
         self.__logger.info("========== Starting " + constants.APP_NAME + " v" + constants.APP_VERSION + " ==========")
 
         self.app = App()
-        self.app.tk.wm_attributes('-fullscreen','true')
-        self.app.tk.geometry('%dx%d+%d+%d' % (800, 480, 0, 0))
+        #self.app.tk.wm_attributes('-fullscreen','true')
+        #self.app.tk.geometry('%dx%d+%d+%d' % (800, 480, 0, 0))
+        self.app.tk.geometry("800x480")
+        self.app.tk.overrideredirect("True")
         self.app.when_closed = self.goodbye
 
         self.__init_gui()
@@ -193,11 +197,13 @@ class MainWidow:
         
 if __name__ == "__main__":
     try:
-        GPIO.setmode(GPIO.BCM)
+        if not constants.EMULATE_HX711:
+            GPIO.setmode(GPIO.BCM)
         main_window = MainWidow()
         main_window.display()
         SystemExit(0)
     except Exception as e:
         print(e)
     finally:
-        GPIO.cleanup()
+        if not constants.EMULATE_HX711:
+            GPIO.cleanup()
