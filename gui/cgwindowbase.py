@@ -54,6 +54,14 @@ class CGWindowBase:
         self.btn_tare.configure(text='Tare', width=10)
         self.btn_tare.pack(padx="3 0", side="left")
         self.btn_tare.configure(command=self.on_tare)
+        self.btn_start = wtk.Button(self.bottom_frame)
+        self.btn_start.configure(text='Start', width=5)
+        self.btn_start.pack(padx="30 0", side="left")
+        self.btn_start.configure(command=self.on_start)
+        self.btn_stop = wtk.Button(self.bottom_frame)
+        self.btn_stop.configure(text='Stop', width=5)
+        self.btn_stop.pack(side="left")
+        self.btn_stop.configure(command=self.on_stop)
         self.btn_exit = wtk.Button(self.bottom_frame)
         self.btn_exit.configure(text='Exit', width=10)
         self.btn_exit.pack(padx=3, pady=3, side="right")
@@ -70,6 +78,12 @@ class CGWindowBase:
         pass
 
     def on_tare(self):
+        pass
+
+    def on_start(self):
+        pass
+
+    def on_stop(self):
         pass
 
     def on_exit(self):

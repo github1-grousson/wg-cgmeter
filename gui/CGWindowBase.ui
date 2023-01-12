@@ -24,7 +24,6 @@
             <property name="background">#252526</property>
             <property name="font">{Arial} 10 {italic}</property>
             <property name="foreground">white</property>
-            <property name="text" translatable="yes">Initializing...</property>
             <property name="textvariable">string:lb_message_txt</property>
             <layout manager="place">
               <property name="anchor">nw</property>
@@ -98,6 +97,27 @@
             <property name="width">10</property>
             <layout manager="pack">
               <property name="padx">3 0</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="btn_start" named="True">
+            <property name="command" type="command" cbtype="simple">on_start</property>
+            <property name="text" translatable="yes">Start</property>
+            <property name="width">5</property>
+            <layout manager="pack">
+              <property name="padx">30 0</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="btn_stop" named="True">
+            <property name="command" type="command" cbtype="simple">on_stop</property>
+            <property name="text" translatable="yes">Stop</property>
+            <property name="width">5</property>
+            <layout manager="pack">
               <property name="side">left</property>
             </layout>
           </object>
