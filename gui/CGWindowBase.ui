@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='utf-8'?>
+<interface version="1.3">
+  <object class="tk.Toplevel" id="mainwindow" named="True">
+    <property name="background">#252526</property>
+    <property name="geometry">800x480</property>
+    <property name="height">480</property>
+    <property name="overrideredirect">True</property>
+    <property name="width">800</property>
+    <child>
+      <object class="tk.Frame" id="top_frame" named="True">
+        <property name="background">#252526</property>
+        <property name="height">30</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="padx">5</property>
+          <property name="pady">1</property>
+          <property name="side">top</property>
+        </layout>
+        <containerlayout manager="grid">
+          <property type="col" id="0" name="weight">1</property>
+        </containerlayout>
+        <child>
+          <object class="tk.Label" id="lb_message" named="True">
+            <property name="background">#252526</property>
+            <property name="font">{Arial} 10 {italic}</property>
+            <property name="foreground">white</property>
+            <property name="text" translatable="yes">Initializing...</property>
+            <property name="textvariable">string:lb_message_txt</property>
+            <layout manager="place">
+              <property name="anchor">nw</property>
+              <property name="x">1</property>
+              <property name="y">4</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Label" id="lb_title" named="True">
+            <property name="background">#252526</property>
+            <property name="font">{Arial} 14 {}</property>
+            <property name="foreground">white</property>
+            <property name="text" translatable="yes">CG Meter</property>
+            <layout manager="grid">
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Label" id="lb_author" named="True">
+            <property name="background">#252526</property>
+            <property name="font">{Arial} 6 {italic}</property>
+            <property name="foreground">white</property>
+            <property name="text" translatable="yes">by WGS</property>
+            <layout manager="grid">
+              <property name="column">1</property>
+              <property name="row">0</property>
+              <property name="sticky">s</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="content_frame" named="True">
+        <property name="background">#252526</property>
+        <layout manager="pack">
+          <property name="expand">true</property>
+          <property name="fill">both</property>
+          <property name="padx">5</property>
+          <property name="pady">5</property>
+          <property name="side">top</property>
+        </layout>
+      </object>
+    </child>
+    <child>
+      <object class="tk.Frame" id="bottom_frame" named="True">
+        <property name="background">#252526</property>
+        <property name="height">30</property>
+        <layout manager="pack">
+          <property name="fill">x</property>
+          <property name="side">top</property>
+        </layout>
+        <child>
+          <object class="tk.Button" id="btn_calibrate" named="True">
+            <property name="command" type="command" cbtype="simple">on_calibrate</property>
+            <property name="text" translatable="yes">Calibrate</property>
+            <property name="width">10</property>
+            <layout manager="pack">
+              <property name="padx">3 0</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="btn_tare" named="True">
+            <property name="command" type="command" cbtype="simple">on_tare</property>
+            <property name="text" translatable="yes">Tare</property>
+            <property name="width">10</property>
+            <layout manager="pack">
+              <property name="padx">3 0</property>
+              <property name="side">left</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="tk.Button" id="btn_exit" named="True">
+            <property name="command" type="command" cbtype="simple">on_exit</property>
+            <property name="text" translatable="yes">Exit</property>
+            <property name="width">10</property>
+            <layout manager="pack">
+              <property name="padx">3</property>
+              <property name="pady">3</property>
+              <property name="side">right</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>
