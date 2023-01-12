@@ -85,7 +85,7 @@ class CGModule ():
         
         result = False
         try:
-            self.__logger.info("Initializing CGModule :%s", self.__name)
+            self.__logger.debug("Initializing CGModule :%s", self.__name)
             self.__hx = HX711(dout_pin=self.__dout_pin, pd_sck_pin=self.__pd_sck_pin)
             err = self.__hx.zero()
             # check if successful
@@ -94,6 +94,7 @@ class CGModule ():
 
             self.__hx.set_scale_ratio(self.__ratio)
             self.__initialized = True
+            self.__logger.debug("CGModule :%s is OK", self.__name)
             result = True
         
         except BaseException as e:
@@ -106,9 +107,9 @@ class CGModule ():
             if not self.__initialized:
                 raise Exception("not initialized")
 
-            self.__logger.info("Taring CGModule :%s", self.__name)
+            self.__logger.debug("Taring CGModule :%s", self.__name)
             self.__hx.zero()
-            self.__logger.info("Taring Done")
+            self.__logger.debug("Taring Done")
         
         except BaseException as e:
             self.__logger.error("Error taring CGModule(%s): %s",self.__name,str(e))
@@ -118,7 +119,7 @@ class CGModule ():
             if not self.__initialized:
                 raise Exception("not initialized")
 
-            self.__logger.info("Calibrating CGModule :%s", self.__name)
+            self.__logger.debug("Calibrating CGModule :%s", self.__name)
             reading = self.__hx.get_raw_data_mean()
             if reading:  # always check if you get correct value or only False
                 self.__logger.debug('Data subtracted by offset but still not converted to units:%d',reading)
@@ -127,7 +128,7 @@ class CGModule ():
 
             reading = self.__hx.get_data_mean()
             if reading:
-                self.__logger.info('Mean value from HX711 subtracted by offset:%d', reading)
+                self.__logger.debug('Mean value from HX711 subtracted by offset:%d', reading)
                 try:
                     value = float(known_weight_grams)
                     self.__logger.debug('Calibration weight %f grams',value)
@@ -140,7 +141,7 @@ class CGModule ():
                 # scale ratio. Without arguments 'channel' and 'gain_A' it sets
                 # the ratio for current channel and gain.
                 self.__ratio = reading / value  # calculate the ratio for channel A and gain 128
-                self.__logger.info('Calibration ratio for %s:%f', self.__name, self.__ratio)
+                self.__logger.debug('Calibration ratio for %s:%f', self.__name, self.__ratio)
                 self.__hx.set_scale_ratio(self.__ratio)  # set ratio for current channel
             
             else:
