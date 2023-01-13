@@ -8,7 +8,12 @@ Just put the RC plane on the three load cells a read CG parameters on screen.
 ## Dependencies
 * [gandalf15/HX711](gandalf15/HX711)
 ```bash
-pip3 install 'git+https://github.com/bytedisciple/HX711.git#egg=HX711&subdirectory=HX711_Python3'
+$pip install 'git+https://github.com/bytedisciple/HX711.git#egg=HX711&subdirectory=HX711_Python3'
+```
+* [github1-grousson/wgtinker](github1-grousson/wgtinker)
+``` bash
+~$ cd ~/wgkinter/
+~/wgkinter$ pip install .
 ```
 
 ## History
