@@ -83,7 +83,7 @@ class MainWidow:
             self.message_box.value = "Initializing..."
             self.app.update()
             self.__logger.info("Initializing gauges")
-            self.__cgmeter = cg_meter.CGMeter(os.path.join(os.path.dirname(__file__),constants.APP_CONFIG_DIR,constants.APP_CG_CONFIG))
+            self.__cgmeter = cg_meter.CGMeter(constants.APP_CG_FILENAME)
             self.__cgmeter.initialize()
             self.__logger.info("Initializing done")
             self.message_box.value = ""
