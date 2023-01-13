@@ -13,5 +13,5 @@ APP_AUTHOR = "Wilfried Grousson"
 APP_CONFIG_DIR = "config"
 APP_CG_CONFIG_NAME = "cgconfig.json"
 LOG_LEVEL = logging.DEBUG
-EMULATE_HX711 = True
+EMULATE_HX711 = False
 APP_CG_FILENAME = os.path.join(os.getcwd(),APP_CONFIG_DIR,APP_CG_CONFIG_NAME)
