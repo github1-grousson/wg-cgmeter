@@ -21,8 +21,8 @@ class MainWidow:
         self.__logger.info("========== Starting " + constants.APP_NAME + " v" + constants.APP_VERSION + " ==========")
 
         self.app = App()
-        #self.app.tk.wm_attributes('-fullscreen','true')
-        #self.app.tk.geometry('%dx%d+%d+%d' % (800, 480, 0, 0))
+        self.app.tk.wm_attributes('-fullscreen','true')
+        self.app.tk.geometry('%dx%d+%d+%d' % (800, 480, 0, 0))
         self.app.tk.geometry("800x480")
         self.app.tk.overrideredirect("True")
         self.app.when_closed = self.goodbye
@@ -110,22 +110,26 @@ class MainWidow:
         self.btns["tare"].toggle()
         self.btns["cal"].toggle()
         self.app.update()
-        whichone = ['LeftWheel', 'RightWheel']
-        for w in whichone:    
-            self.app.info("Calibrate", f"Place the calibration weight on the {w} scale")
-            value = self.app.question("Calibrate", "What is the weight of the calibration weight (in grams) ?")
-            try:
-                if value is not None:
-                    weight = float(value)
-                    self.__cgmeter.calibrate_module(w, weight)
-                    self.app.info("Calibrate", "Calibration complete, you can remove the weight")
+        whichone = ['LeftWheel', 'RightWheel', 'TailWheel']
+        value = self.app.question("Calibrate", "What is the weight of the calibration weight (in grams) ?")
+        if value is not None:
+            for w in whichone:    
                 
-            except ValueError:
-                reason = str.format(f'Expected integer or float and I have got:{ value}')
-                self.app.error("Calibrate", reason)
-            except BaseException as e:
-                msg = f"Calibration error : \n{str(e)}"
-                self.app.info("Calibrate", msg)
+                res = self.app.yesno("Calibrate", f"Place the calibration weight ({value}g) on the {w} scale")
+                if res == False:
+                    continue
+                try:
+                    if value is not None:
+                        weight = float(value)
+                        self.__cgmeter.calibrate_module(w, weight)
+                        self.app.info("Calibrate", "Calibration complete, you can remove the weight")
+                    
+                except ValueError:
+                    reason = str.format(f'Expected integer or float and I have got:{ value}')
+                    self.app.error("Calibrate", reason)
+                except BaseException as e:
+                    msg = f"Calibration error : \n{str(e)}"
+                    self.app.info("Calibrate", msg)
         
         self.btns["tare"].toggle()
         self.btns["cal"].toggle()
