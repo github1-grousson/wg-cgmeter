@@ -4,11 +4,11 @@
  # @ License: MIT
  # @ Description: The main application window
  '''
-import os
 import time
+import platform
 import logging
 import logging.handlers
-import tkinter.messagebox as tk
+import wgkinter as wk
 
 ''' Personal imports '''
 from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
@@ -30,21 +30,45 @@ class CGMainApp(CGWindowBase):
                 self.__buttons[c_var] = c_vars[c_var]
 
 
-        self.disable_buttons('btn_exit')
+        self.disable_buttons()
     
-    ''' Private methods'''
+    ''' Private methods call by threads'''
     def __initialize_cggauges(self):
+        self.mainwindow.configure(cursor="watch")
         self.message = "Initializing CG gauges..."
-        self.mainwindow.update()
         self.__cgmeter = CGMeter(APP_CG_FILENAME)
         self.__cgmeter.initialize()
         self.message = "Inialization done."
         self.message = ""
-        self.enable_buttons('btn_calibrate','btn_tare','btn_start')
+        self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
+        self.mainwindow.configure(cursor="")
+
+    def __tare_cggauges(self):
+        try:
+            self.mainwindow.configure(cursor="watch")
+            self.message = "Taring CG gauges..."
+            self.__cgmeter.tare()
+            self.message = "Taring done."
+            wk.MessageDialog(self.mainwindow, "CG Meter Tare", "Tare done successfully.")
+            
+        except BaseException as e:
+            self.logger.error("Taring failed: " + str(e))
+            wk.MessageDialog(self.mainwindow, "CG Meter Tare", "Tare failed.\n" + str(e))
+        finally:
+            self.mainwindow.configure(cursor="")
+            self.message = ""
+            self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')    
        
     ''' Override methods'''
     def run(self):
         self.mainwindow.after(1500, self.__initialize_cggauges)
+        uname = platform.uname()
+        if uname.system != 'Windows':
+            # below, does not work on windows platform
+            self.mainwindow.attributes('-topmost', True)
+        else:
+            self.mainwindow.lift()
+            
         super().run()
 
     ''' Handlers methods'''
@@ -55,8 +79,12 @@ class CGMainApp(CGWindowBase):
         pass
 
     def on_tare(self):
-        tk.showinfo("Tare", "Tare done")
-        pass
+        self.disable_buttons()
+        answer = wk.YesNoDialog(self.mainwindow, title="CG Meter Tare", question="Remove all weights from the CG meter.\nContinue ?")
+        if answer.result == True:
+            self.mainwindow.after(500, self.__tare_cggauges)
+        else:    
+            self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
 
     def on_start(self):
         self.btn_start.toogle()
@@ -81,8 +109,9 @@ class CGMainApp(CGWindowBase):
 
     @message.setter
     def message(self, value):
-        self.lb_message_txt.set(value)
         self.__logger.debug(value)
+        self.lb_message_txt.set(value)
+        self.mainwindow.update()
 
     @property
     def version(self):
