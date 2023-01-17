@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import tkinter as tk
-
+import wgkinter as wk
 
 class CGWindowBase:
     def __init__(self, master=None):
@@ -57,23 +57,23 @@ class CGWindowBase:
             side="top")
         self.bottom_frame = tk.Frame(self.mainwindow)
         self.bottom_frame.configure(background="#252526", height=30)
-        self.btn_calibrate = tk.Button(self.bottom_frame)
+        self.btn_calibrate = wk.Button(self.bottom_frame)
         self.btn_calibrate.configure(text='Calibrate', width=10)
         self.btn_calibrate.pack(padx="3 0", side="left")
         self.btn_calibrate.configure(command=self.on_calibrate)
-        self.btn_tare = tk.Button(self.bottom_frame)
+        self.btn_tare = wk.Button(self.bottom_frame)
         self.btn_tare.configure(text='Tare', width=10)
         self.btn_tare.pack(padx="3 0", side="left")
         self.btn_tare.configure(command=self.on_tare)
-        self.btn_start = tk.Button(self.bottom_frame)
+        self.btn_start = wk.Button(self.bottom_frame)
         self.btn_start.configure(text='Start', width=5)
         self.btn_start.pack(padx="30 0", side="left")
         self.btn_start.configure(command=self.on_start)
-        self.btn_stop = tk.Button(self.bottom_frame)
+        self.btn_stop = wk.Button(self.bottom_frame)
         self.btn_stop.configure(text='Stop', width=5)
         self.btn_stop.pack(side="left")
         self.btn_stop.configure(command=self.on_stop)
-        self.btn_exit = tk.Button(self.bottom_frame)
+        self.btn_exit = wk.Button(self.bottom_frame)
         self.btn_exit.configure(text='Exit', width=10)
         self.btn_exit.pack(padx=3, pady=3, side="right")
         self.btn_exit.configure(command=self.on_exit)
