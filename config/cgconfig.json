@@ -7,8 +7,8 @@
             ],
             "ratio": 467.52,
             "gpio": {
-                "dt": 5,
-                "sck": 6
+                "dt": 16,
+                "sck": 19
             }
         },
         "RightWheel": {
@@ -18,8 +18,8 @@
             ],
             "ratio": 503.6,
             "gpio": {
-                "dt": 23,
-                "sck": 24
+                "dt": 4,
+                "sck": 19
             }
         },
         "TailWheel": {
@@ -29,8 +29,8 @@
             ],
             "ratio": 1.0,
             "gpio": {
-                "dt": 22,
-                "sck": 6
+                "dt": 25,
+                "sck": 19
             }
         }
     }
