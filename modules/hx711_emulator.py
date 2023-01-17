@@ -48,7 +48,7 @@ class HX711:
         self.sampleRateHz = 80.0
         self.resetTimeStamp = time.time()
         self.sampleCount = 0
-        self.simulateTare = False
+        self.simulateTare = True
 
         # Mutex for reading from the HX711, in case multiple threads in client
         # software try to access get values from the class at the same time.
@@ -236,11 +236,11 @@ class HX711:
     def zero(self, readings=30):
         # If we aren't simulating Taring because it takes too long, just skip it.
         if not self.simulateTare:
-            return 0
+            return False
 
         # Backup REFERENCE_UNIT value
         reference_unit = self.REFERENCE_UNIT
-        self.set_reference_unit(1)
+        self.set_scale_ratio(1)
 
         value = self.get_raw_data_mean(readings)
 
@@ -250,9 +250,9 @@ class HX711:
         self.set_offset(value)
 
         # Restore the reference unit, now that we've got our offset.
-        self.set_reference_unit(reference_unit)
+        self.set_scale_ratio(reference_unit)
 
-        return value;
+        return False
 
     
     def set_reading_format(self, byte_format="LSB", bit_format="MSB"):
