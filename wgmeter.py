@@ -35,8 +35,16 @@ import logging
 import logging.handlers
 
 ''' Personal imports '''
-from constants import APP_NAME, LOG_LEVEL, APP_VERSION
+from constants import APP_NAME, LOG_LEVEL, APP_VERSION, EMULATE_HX711
 from gui.cgmainapp import CGMainApp
+
+'''GPIO import'''
+if not EMULATE_HX711:
+    import RPi.GPIO as GPIO
+
+'''For remote debugging
+export DISPLAY=:0;
+'''
 
 def __init_logging():
         logger = logging.getLogger(APP_NAME)
@@ -62,9 +70,20 @@ def __init_logging():
 
 
 if __name__ == "__main__":
-    logger = __init_logging()
-    logger.info("========== Starting " + APP_NAME + " v" + APP_VERSION + " ==========")
-    # Create the main window
-    app = CGMainApp()
-    app.run()
-    logger.info("========== Ending " + APP_NAME + " v" + APP_VERSION + " ==========")
+    try:
+        # start by initializing the RPi GPIO
+        if not EMULATE_HX711:
+            GPIO.setmode(GPIO.BCM)
+
+        logger = __init_logging()
+        logger.info("========== Starting " + APP_NAME + " v" + APP_VERSION + " ==========")
+        # Create the main window
+        app = CGMainApp()
+        app.run()
+        logger.info("========== Ending " + APP_NAME + " v" + APP_VERSION + " ==========")
+        
+    except Exception as e:
+        raise e
+    finally:
+        if not EMULATE_HX711:
+            GPIO.cleanup()
