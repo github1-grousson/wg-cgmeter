@@ -33,7 +33,7 @@ import os
 import logging
 
 APP_NAME = "CGMeter"
-APP_VERSION = "0.1.0"
+APP_VERSION = "0.2.0"
 APP_AUTHOR = "Wilfried Grousson"
 APP_CONFIG_DIR = "config"
 APP_CG_CONFIG_NAME = "cgconfig.json"
