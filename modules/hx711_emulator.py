@@ -251,7 +251,8 @@ class HX711:
 
         # Restore the reference unit, now that we've got our offset.
         self.set_scale_ratio(reference_unit)
-
+        # wait for the sensor to stabilize
+        time.sleep(1)
         return False
 
     
