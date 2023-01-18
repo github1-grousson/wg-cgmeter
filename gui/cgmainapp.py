@@ -4,7 +4,7 @@
  # @ License: MIT
  # @ Description: The main application window
  '''
-import time
+
 import platform
 import logging
 import logging.handlers
@@ -35,6 +35,7 @@ class CGMainApp(CGWindowBase):
     ''' Private methods call by threads'''
     def __initialize_cggauges(self):
         self.mainwindow.configure(cursor="watch")
+        self.mainwindow.update()
         self.message = "Initializing CG gauges..."
         self.__cgmeter = CGMeter(APP_CG_FILENAME)
         self.__cgmeter.initialize()
@@ -46,6 +47,7 @@ class CGMainApp(CGWindowBase):
     def __tare_cggauges(self):
         try:
             self.mainwindow.configure(cursor="watch")
+            self.mainwindow.update()
             self.message = "Taring CG gauges..."
             self.__cgmeter.tare()
             self.message = "Taring done."
@@ -80,7 +82,7 @@ class CGMainApp(CGWindowBase):
 
     def on_tare(self):
         self.disable_buttons()
-        answer = wk.YesNoDialog(self.mainwindow, title="CG Meter Tare", question="Remove all weights from the CG meter.\nContinue ?")
+        answer = wk.YesNoDialog(self.mainwindow, title="CG Meter Tare", question="Remove all weights from the CG meter.\nDo you wan't to continue ?")
         if answer.result == True:
             self.mainwindow.after(500, self.__tare_cggauges)
         else:    
