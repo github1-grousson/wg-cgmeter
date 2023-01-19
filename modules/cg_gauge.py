@@ -1,3 +1,34 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+'''
+## A load cell module
+
+Author: Wilfried Grousson
+Created Date: 2023/01/13
+------------------------------------
+MIT License
+
+Copyright (c) 2023 WG
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+'''
+
 '''
  # @ Author: Wilfried Grousson
  # @ Created: 2023-01-11
@@ -12,7 +43,11 @@ else:
     from modules.hx711_emulator import HX711
 
 class CGModule ():
+    """Class to manage a load cell module
+    """
     def __init__(self):
+        """Constructor
+        """
         self.__name = "Unknown"
         self.__ratio = 0.0
         self.__dout_pin = 0
@@ -82,7 +117,11 @@ class CGModule ():
             self.__logger.error("Error saving CGModule(%s) config: %s", self.__name,  str(e))
 
     def initialize(self) -> bool:
-        
+        """Initialize the module
+
+        Returns:
+            bool: true if initalization succeeded
+        """
         result = False
         try:
             self.__logger.debug("Initializing CGModule :%s", self.__name)
@@ -102,7 +141,14 @@ class CGModule ():
         
         return result
 
-    def tare(self) :
+    def tare(self) -> bool:
+        """Tare the module
+
+        Returns:
+            bool: true if taring succeeded
+
+        """
+        result = False
         try:
             if not self.__initialized:
                 raise Exception("not initialized")
@@ -110,11 +156,19 @@ class CGModule ():
             self.__logger.debug("Taring CGModule :%s", self.__name)
             self.__hx.zero()
             self.__logger.debug("Taring Done")
+            result = True
         
         except BaseException as e:
             self.__logger.error("Error taring CGModule(%s): %s",self.__name,str(e))
 
+        return result
+
     def calibrate(self, known_weight_grams : float) :
+        """Calibrate the module
+        
+        Args:
+            known_weight_grams (float): the known weight in grams of the calibration weight
+        """
         try:
             if not self.__initialized:
                 raise Exception("not initialized")
@@ -154,7 +208,14 @@ class CGModule ():
             raise e
 
     def getWeight(self, readings : int = 30) -> float:
+        """Get the weight of the module
         
+        Args:
+            readings (int, optional): number of readings to average. Defaults to 30.
+
+        Returns:
+            float: the weight in grams
+        """
         result = 0.0
         try:
             if not self.__initialized:
