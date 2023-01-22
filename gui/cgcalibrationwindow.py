@@ -35,16 +35,19 @@ import tkinter as tk
 import wgkinter as wk
 from wgkinter.modal import NoTitleBarModalDialog
 
+from modules.cg_meter import CGMeter
+
 
 
 class CGCalibrationWindow(NoTitleBarModalDialog):
     """The calibration modal dialog box to calibrate the different modules
     """
-    def __init__(self, master=None):
+    def __init__(self,master=None):
         """constructor
 
         Args:
             master (tk.Tk, optional): The parent window. Defaults to None.
+
         """
         super().__init__(master, title = "Calibration",geometry="800x450")
 
@@ -117,17 +120,23 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
 
         return entry_weight
         
-    def on_calibrate(self, button):
+    def on_calibrate(self, module_name):
         logger = logging.getLogger(APP_NAME)
-        logger.debug(f"Calbrating {button}")
+        logger.debug(f"Calbrating {module_name}")
         known_weight_grams = self.calibration_weigth.get()
         if known_weight_grams <= 0:
             wk.MessageDialog(self, "Error", "The calibration weight must be greater than 0")
             logger.error("The calibration weight must be greater than 0")
             return
         
-        dlg = wk.YesNoDialog(self, "Calibration", f"Calibrate {button} with {known_weight_grams} grams ?")
-        if dlg.result is True:
-            logger.debug("known weight = %s", known_weight_grams)
+        dlg = wk.YesNoDialog(self, "Calibration", f"Calibrate {module_name} with {known_weight_grams} grams ?")
+        try:
+            if dlg.result is True:
+                logger.debug("known weight = %s", known_weight_grams)
+                CGMeter().calibrate_module(module_name, known_weight_grams)
+                wk.MessageDialog(self, "Calibration", f"{module_name} calibrated with success")
+        except Exception as e:
+            logger.error(f"Error during calibration: {str(e)}")
+            wk.MessageDialog(self, "Error", f"Error during calibration : {e}")
 
   
