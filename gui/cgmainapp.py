@@ -37,6 +37,7 @@ import wgkinter as wk
 from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
+from gui.cgcalibrationwindow import CGCalibrationWindow
 
 class CGMainApp(CGWindowBase):
     """The main application window"""
@@ -102,7 +103,16 @@ class CGMainApp(CGWindowBase):
         self.__goodbye()
 
     def on_calibrate(self):
-        pass
+        self.disable_buttons()
+        try:
+            cal = CGCalibrationWindow(self.mainwindow)
+
+        except BaseException as e:
+            self.__logger.error("Calibration failed: " + str(e))
+            wk.MessageDialog(self.mainwindow, "CG Meter Calibration", "Calibration failed.\n" + str(e))
+        finally:
+            self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
+
 
     def on_tare(self):
         self.disable_buttons()
