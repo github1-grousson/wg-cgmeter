@@ -52,8 +52,6 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
         super().__init__(master, title = "Calibration",geometry="800x450")
 
         """DO NOT ADD CODE BELOW THIS LINE AS IT WILL BE CALLED ONLY WHEN DIALOG IS DESTROYED"""
-                
-
     
     def buttonbox(self, parent):
         """Add the buttons to the dialog box. This method is overriden from the parent class
@@ -103,6 +101,7 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
             image=self.img_extra_top_view,
             text='label2')
         img.pack(pady=20, side="top")
+
         btn_rwheel = wk.Button(cal_frame)
         btn_rwheel.configure(text='Right Wheel', width=10)
         btn_rwheel.place(anchor="center", relx=0.25, rely=0.2, x=0, y=0)
@@ -117,8 +116,21 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
         btn_lwheel.configure(command=lambda button="LeftWheel": self.on_calibrate(button))
         cal_frame.pack(fill="x", padx=100, pady="10 0", side="top")
 
+        self.__buttons = {
+            "RightWheel": btn_rwheel,
+            "TailWheel": btn_twheel,
+            "LeftWheel": btn_lwheel
+        }
 
         return entry_weight
+
+    def __disable_buttons(self):
+        for button in self.__buttons.values():
+            button.configure(state="disabled")
+
+    def __enable_buttons(self):
+        for button in self.__buttons.values():
+            button.configure(state="normal")
         
     def on_calibrate(self, module_name):
         logger = logging.getLogger(APP_NAME)
@@ -132,9 +144,15 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
         dlg = wk.YesNoDialog(self, "Calibration", f"Calibrate {module_name} with {known_weight_grams} grams ?")
         try:
             if dlg.result is True:
-                logger.debug("known weight = %s", known_weight_grams)
+                logger.debug(f"Calibrating module {module_name} with known weight of {known_weight_grams}")
+                self.configure(cursor="watch")
+                self.__disable_buttons()
+                self.update()
                 CGMeter().calibrate_module(module_name, known_weight_grams)
+                self.configure(cursor="")
+                self.__enable_buttons()
                 wk.MessageDialog(self, "Calibration", f"{module_name} calibrated with success")
+                
         except Exception as e:
             logger.error(f"Error during calibration: {str(e)}")
             wk.MessageDialog(self, "Error", f"Error during calibration : {e}")
