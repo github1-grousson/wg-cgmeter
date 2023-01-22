@@ -36,14 +36,16 @@ import threading
 import time
 from . import cg_gauge
 
-class CGMeter :
-    def __init__(self, configfile : str):
-        self.__logger = logging.getLogger(constants.APP_NAME)
+class Singleton:
+    _instance = None
 
-        self.__configfile = configfile
-        self.__load_from_file()
+    def  __new__(cls):
+        if not cls._instance:
+            cls._instance = super(Singleton, cls).__new__(cls)
+        return cls._instance
 
-        self.__running = False
+class CGMeter(Singleton) :
+    _initialize = False
 
     def __load_from_file(self):
         self.__logger.debug("Loading CGMeter config from file: %s", self.__configfile)
@@ -82,8 +84,18 @@ class CGMeter :
         callback(None)
         self.__logger.debug("CGMeter reading thread stopped")
         
-    def initialize(self, whichone : str = 'all'):
+    def initialize(self,configfile : str, whichone : str = 'all'):
+        if self._initialize:
+            raise Exception("CGMeter already initialized")
+
+        self.__logger = logging.getLogger(constants.APP_NAME)
+        self.__running = False
+        self._initialize = True
+
         try:
+            self.__configfile = configfile
+            self.__load_from_file()
+
             if whichone == 'all':
                 for module in self.__modules:
                     module.initialize()
@@ -145,7 +157,6 @@ class CGMeter :
         if self.__running:
             self.__running = False
             #self.__thread.join()
-    
     
     """Perhaps below this line should be deprecated in future ? Is there a need to thread 1 module reading ?"""
     def read_by_module(self, callback : callable, whichone : str = 'all') :
