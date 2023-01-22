@@ -10,20 +10,20 @@ class CGWindowBase:
         self.mainwindow.geometry("800x480")
         self.mainwindow.overrideredirect("True")
         self.top_frame = tk.Frame(self.mainwindow)
-        self.top_frame.configure(background="#252526", height=30)
+        self.top_frame.configure(background="#323233", height=30)
         self.lb_message = tk.Label(self.top_frame)
         self.lb_message_txt = tk.StringVar()
         self.lb_message.configure(
-            background="#252526",
+            background="#323233",
             font="{Arial} 10 {italic}",
             foreground="white",
             textvariable=self.lb_message_txt)
         self.lb_message.place(anchor="nw", x=1, y=4)
         frame1 = tk.Frame(self.top_frame)
-        frame1.configure(background="#252526", height=200, width=200)
+        frame1.configure(background="#323233")
         self.lb_title = tk.Label(frame1)
         self.lb_title.configure(
-            background="#252526",
+            background="#323233",
             font="{Arial} 14 {}",
             foreground="white",
             text='CG Meter')
@@ -31,7 +31,7 @@ class CGWindowBase:
         self.lb_version = tk.Label(frame1)
         self.lb_version_txt = tk.StringVar(value='v0.0')
         self.lb_version.configure(
-            background="#252526",
+            background="#323233",
             font="{Arial} 8 {}",
             foreground="white",
             text='v0.0',
@@ -40,7 +40,7 @@ class CGWindowBase:
         frame1.grid(column=0, row=0)
         self.lb_author = tk.Label(self.top_frame)
         self.lb_author.configure(
-            background="#252526",
+            background="#323233",
             font="{Arial} 6 {italic}",
             foreground="white",
             text='by WGS')
@@ -49,6 +49,10 @@ class CGWindowBase:
         self.top_frame.columnconfigure(0, weight=1)
         self.content_frame = tk.Frame(self.mainwindow)
         self.content_frame.configure(background="#252526")
+        self.img = tk.Label(self.content_frame)
+        self.img_top_view_800 = tk.PhotoImage(file="gui/top_view_800.png")
+        self.img.configure(image=self.img_top_view_800, borderwidth=0)
+        self.img.pack(side="top")
         self.content_frame.pack(
             expand="true",
             fill="both",
