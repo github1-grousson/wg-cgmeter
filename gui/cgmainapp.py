@@ -62,8 +62,7 @@ class CGMainApp(CGWindowBase):
         self.mainwindow.configure(cursor="watch")
         self.mainwindow.update()
         self.message = "Initializing CG gauges..."
-        self.__cgmeter = CGMeter(APP_CG_FILENAME)
-        self.__cgmeter.initialize()
+        CGMeter().initialize(APP_CG_FILENAME)
         self.message = "Inialization done."
         self.message = ""
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
@@ -74,7 +73,7 @@ class CGMainApp(CGWindowBase):
             self.mainwindow.configure(cursor="watch")
             self.mainwindow.update()
             self.message = "Taring CG gauges..."
-            self.__cgmeter.tare()
+            CGMeter().tare()
             self.message = "Taring done."
             wk.MessageDialog(self.mainwindow, "CG Meter Tare", "Tare done successfully.")
             
@@ -105,7 +104,7 @@ class CGMainApp(CGWindowBase):
     def on_calibrate(self):
         self.disable_buttons()
         try:
-            cal = CGCalibrationWindow(self.mainwindow)
+            CGCalibrationWindow(self.mainwindow)
 
         except BaseException as e:
             self.__logger.error("Calibration failed: " + str(e))
