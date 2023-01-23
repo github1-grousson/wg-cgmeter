@@ -34,7 +34,6 @@ import logging.handlers
 import wgkinter as wk
 
 ''' Personal imports '''
-import gui.drawings as draw
 from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
