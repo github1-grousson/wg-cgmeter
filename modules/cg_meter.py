@@ -54,6 +54,7 @@ class CGMeter(Singleton) :
             with open(self.__configfile, "r") as f:
                 data = json.load(f)
                 self.__load_from_dict(data["Modules"])
+                self.__calibration_weight = data["CalibrationWeight"]
         except Exception as e:
             self.__logger.error("Error loading CGMeter config: " + str(e))
             raise e
@@ -157,6 +158,12 @@ class CGMeter(Singleton) :
         if self.__running:
             self.__running = False
             #self.__thread.join()
+
+
+    def calibration_weight(self):
+        return self.__calibration_weight
+
+    
     
     """Perhaps below this line should be deprecated in future ? Is there a need to thread 1 module reading ?"""
     def read_by_module(self, callback : callable, whichone : str = 'all') :
