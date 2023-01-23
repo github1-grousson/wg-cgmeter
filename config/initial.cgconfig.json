@@ -33,5 +33,6 @@
                 "sck": 6
             }
         }
-    }
+    },
+    "CalibrationWeight": 50
 }
