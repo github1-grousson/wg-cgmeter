@@ -9,11 +9,13 @@ class CGWindowBase:
         # build ui
         self.mainwindow = tk.Tk() if master is None else tk.Toplevel(master)
         self.mainwindow.configure(background="#252526")
-        self.mainwindow.geometry("800x480")
-        self.mainwindow.overrideredirect("True")
+        self.mainwindow.geometry("800x480+0+0")
+        self.mainwindow.attributes('-fullscreen', True)
+        #self.mainwindow.overrideredirect("True")
         self.top_frame = tk.Frame(self.mainwindow)
         self.top_frame.configure(background="#323233", pady=2)
-        self.lb_message = tk.Label(self.top_frame)
+        
+        self.lb_message = tk.Label(self.mainwindow)
         self.lb_message_txt = tk.StringVar()
         self.lb_message.configure(
             background="#323233",
@@ -21,6 +23,7 @@ class CGWindowBase:
             foreground="white",
             textvariable=self.lb_message_txt)
         self.lb_message.place(anchor="nw", x=1, y=4)
+        
         frame1 = tk.Frame(self.top_frame)
         frame1.configure(background="#323233")
         self.lb_title = tk.Label(frame1)
@@ -49,6 +52,7 @@ class CGWindowBase:
         self.lb_author.grid(column=1, row=0, sticky="s", padx="0 5")
         self.top_frame.pack(fill="x", side="top")
         self.top_frame.columnconfigure(0, weight=1)
+        
         self.content_frame = tk.Frame(self.mainwindow)
         self.content_frame.configure(background="#252526")
         # self.img = tk.Label(self.content_frame)
@@ -112,7 +116,9 @@ class CGWindowBase:
         self.bottom_frame.pack(fill="x", side="top")
 
         # Main widget
+        self.root = self.mainwindow
         self.mainwindow = self.mainwindow
+        
 
     def run(self):
         self.mainwindow.mainloop()
