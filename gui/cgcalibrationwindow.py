@@ -30,7 +30,7 @@ SOFTWARE.
 '''
 import os
 import logging
-from constants import APP_NAME
+from constants import APP_NAME, APP_ROOT_FOLDER
 import tkinter as tk
 import wgkinter as wk
 from wgkinter.modal import NoTitleBarModalDialog
@@ -92,7 +92,8 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
             foreground="white",
             text='Calibrate')
         img = tk.Label(cal_frame)
-        self.img_extra_top_view = tk.PhotoImage(file=os.path.join("gui","top_view_450.png"))
+        logging.getLogger(APP_NAME).debug(f"Loading image {os.path.join(APP_ROOT_FOLDER,'gui','top_view_450.png')}")
+        self.img_extra_top_view = tk.PhotoImage(file=os.path.join(APP_ROOT_FOLDER,"gui","top_view_450.png"))
         img.configure(
             borderwidth=0,
             image=self.img_extra_top_view,

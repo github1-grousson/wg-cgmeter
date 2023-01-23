@@ -1,6 +1,8 @@
 #!/usr/bin/python3
+import os
 import tkinter as tk
 import wgkinter as wk
+import logging
 from PIL import Image, ImageTk
 import constants as const
 
@@ -59,7 +61,8 @@ class CGWindowBase:
         # self.img_top_view_800 = tk.PhotoImage(file="gui/top_view_800.png")
         # self.img.configure(image=self.img_top_view_800, borderwidth=0)
         # self.img.pack(side="top")
-        self.img = Image.open("gui/top_view_800.png")
+        logging.getLogger(const.APP_NAME).debug(f"Loading image {os.path.join(const.APP_ROOT_FOLDER,'gui','top_view_800.png')}")
+        self.img = Image.open(os.path.join(const.APP_ROOT_FOLDER,"gui","top_view_800.png"))
         self.sketch = ImageTk.PhotoImage(self.img)
         self.canvas = tk.Canvas(self.content_frame, width=self.img.size[0], height=self.img.size[1])
         self.canvas.create_image(0, 0, image=self.sketch, anchor="nw")
