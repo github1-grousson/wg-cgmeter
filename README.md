@@ -18,8 +18,9 @@ $pip install 'git+https://github.com/bytedisciple/HX711.git#egg=HX711&subdirecto
 * PIL
 ```bash
 $pip install pillow
-if ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/__init__.py) then try :
-sudo pip3 install pillow --upgrade
+if ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/__init__.py)
+then try :
+$sudo pip3 install pillow --upgrade
 ```
 
 ## History
