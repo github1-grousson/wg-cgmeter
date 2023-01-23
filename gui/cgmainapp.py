@@ -186,7 +186,7 @@ class CGMainApp(CGWindowBase):
 
     @message.setter
     def message(self, value):
-        self.__logger.debug(value)
+        self.__logger.info(value)
         self.lb_message_txt.set(value)
         self.mainwindow.update()
 
