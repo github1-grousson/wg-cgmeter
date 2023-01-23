@@ -126,33 +126,26 @@ class CGMainApp(CGWindowBase):
             self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
 
     def on_start(self):
-        self.btn_start.toogle()
-        self.btn_stop.toogle()
+        self.disable_buttons('btn_stop')
+        self.enable_buttons('btn_stop')
 
         for key in self.lb_weights:
             self.lb_weights[key].place_show()
 
         self.message = "Reading..."
         CGMeter().start_reading(self.on_display_weights)
-        
-        self.btn_calibrate.disable()
-        self.btn_tare.disable()
-        self.btn_exit.disable()
-        
+                
 
     def on_stop(self):
-        self.btn_start.toogle()
-        self.btn_stop.toogle()
-
+        
         CGMeter().stop_reading()
 
         for key in self.lb_weights:
             self.lb_weights[key].place_hide()
 
         self.message = ""
-        self.btn_calibrate.enable()
-        self.btn_tare.enable()
-        self.btn_exit.enable()
+        self.disable_buttons()
+        self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
         
     def on_display_weights(self, weights):
         try:
