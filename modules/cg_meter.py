@@ -76,7 +76,7 @@ class CGMeter(Singleton) :
             values = {}
             for module in self.__modules:
                 if module.initialized:
-                    values[module.name] = module.getWeight(10)
+                    values[module.name] = module.getWeight(6)
             
             callback(values)
             time.sleep(0.1)
