@@ -15,7 +15,14 @@ $pip install 'git+https://github.com/bytedisciple/HX711.git#egg=HX711&subdirecto
 ~$ cd ~/wgkinter/
 ~/wgkinter$ pip install .
 ```
+* PIL
+```bash
+$pip install pillow
+if ImportError: cannot import name 'ImageTk' from 'PIL' (/usr/lib/python3/dist-packages/PIL/__init__.py) then try :
+sudo pip3 install pillow --upgrade
+```
+```
 
 ## History
 * 0.1.0 : main.py is a POC, it displays only weights of the load cells. Based on guizero (pip install guizero)
-* 0.2.0 : new UI based on tkinter and wgkinter
+* 0.2.0 : new UI based on tkinter and wgkinter, shows the different weights
