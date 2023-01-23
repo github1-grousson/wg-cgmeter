@@ -68,7 +68,6 @@ def __init_logging():
  
         return logger
 
-
 if __name__ == "__main__":
     try:
         # start by initializing the RPi GPIO
