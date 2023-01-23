@@ -61,7 +61,7 @@ def __init_logging():
         needRoll = os.path.exists(log_file + "/cgmeter.log")
         file_handler = logging.handlers.RotatingFileHandler(log_file + "/cgmeter.log", backupCount=5)
         
-        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s|%(module)s - %(levelname)s - %(message)s'))
         file_handler.setLevel(LOG_LEVEL)
         file_handler.doRollover() if needRoll else None
         logger.addHandler(file_handler)
