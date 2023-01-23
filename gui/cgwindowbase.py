@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import tkinter as tk
 import wgkinter as wk
+from PIL import Image, ImageTk
+import constants as const
 
 class CGWindowBase:
     def __init__(self, master=None):
@@ -49,10 +51,36 @@ class CGWindowBase:
         self.top_frame.columnconfigure(0, weight=1)
         self.content_frame = tk.Frame(self.mainwindow)
         self.content_frame.configure(background="#252526")
-        self.img = tk.Label(self.content_frame)
-        self.img_top_view_800 = tk.PhotoImage(file="gui/top_view_800.png")
-        self.img.configure(image=self.img_top_view_800, borderwidth=0)
-        self.img.pack(side="top")
+        # self.img = tk.Label(self.content_frame)
+        # self.img_top_view_800 = tk.PhotoImage(file="gui/top_view_800.png")
+        # self.img.configure(image=self.img_top_view_800, borderwidth=0)
+        # self.img.pack(side="top")
+        self.img = Image.open("gui/top_view_800.png")
+        self.sketch = ImageTk.PhotoImage(self.img)
+        self.canvas = tk.Canvas(self.content_frame, width=self.img.size[0], height=self.img.size[1])
+        self.canvas.create_image(0, 0, image=self.sketch, anchor="nw")
+        self.canvas.configure(background="#252526", borderwidth=0, highlightthickness=0)
+        self.canvas.pack(side="top",fill="both", expand="yes")
+
+        self.lb_weights = {}
+        self.lb_weights['total'] = wk.Label(self.content_frame)
+        self.lb_weights['mwheels'] = wk.Label(self.content_frame)
+        self.lb_weights['RightWheel'] = wk.Label(self.content_frame)
+        self.lb_weights['TailWheel'] = wk.Label(self.content_frame)
+        self.lb_weights['LeftWheel'] = wk.Label(self.content_frame)
+        for key in self.lb_weights:
+            self.lb_weights[key].configure(highlightbackground="#007fd4", highlightthickness=1, text=f'{0} g')
+            self.lb_weights[key].place(anchor="center", relx=0, rely=0, width=80)
+        
+        self.lb_weights['RightWheel'].place(x=const.RWHEEL[0], y=const.RWHEEL[1])
+        self.lb_weights['LeftWheel'].place(x=const.LWHEEL[0], y=const.LWHEEL[1])
+        self.lb_weights['TailWheel'].place(x=const.TWHEEL[0], y=const.TWHEEL[1])
+        self.lb_weights['mwheels'].place(x=const.LWHEEL[0], y=378)
+        self.lb_weights['total'].place(x=378, y=378)
+
+        for key in self.lb_weights:
+            self.lb_weights[key].place_hide()
+
         self.content_frame.pack(
             expand="true",
             fill="both",

@@ -34,6 +34,7 @@ import logging.handlers
 import wgkinter as wk
 
 ''' Personal imports '''
+import gui.drawings as draw
 from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
@@ -54,7 +55,6 @@ class CGMainApp(CGWindowBase):
             if type(c_vars[c_var]).__name__ == 'Button':
                 self.__buttons[c_var] = c_vars[c_var]
 
-
         self.disable_buttons()
     
     ''' Private methods call by threads'''
@@ -62,7 +62,7 @@ class CGMainApp(CGWindowBase):
         self.mainwindow.configure(cursor="watch")
         self.mainwindow.update()
         self.message = "Initializing CG gauges..."
-        CGMeter().initialize(APP_CG_FILENAME)
+        CGMeter().initialize(APP_CG_FILENAME)        
         self.message = "Inialization done."
         self.message = ""
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
@@ -94,10 +94,16 @@ class CGMainApp(CGWindowBase):
             self.mainwindow.attributes('-topmost', True)
         else:
             self.mainwindow.lift()
+
+        #self.mainwindow.bind('<Motion>', self.on_motion)
             
         super().run()
 
     ''' Handlers methods'''
+    def on_motion(self, event):
+        self.message = ("x: " + str(event.x) + " y: " + str(event.y))
+        
+
     def on_exit(self):
         self.__goodbye()
 
@@ -112,7 +118,6 @@ class CGMainApp(CGWindowBase):
         finally:
             self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
 
-
     def on_tare(self):
         self.disable_buttons()
         answer = wk.YesNoDialog(self.mainwindow, title="CG Meter Tare", question="Remove all weights from the CG meter.\nDo you wan't to continue ?")
@@ -124,14 +129,59 @@ class CGMainApp(CGWindowBase):
     def on_start(self):
         self.btn_start.toogle()
         self.btn_stop.toogle()
+
+        for key in self.lb_weights:
+            self.lb_weights[key].place_show()
+
+        self.message = "Reading..."
+        CGMeter().start_reading(self.on_display_weights)
+        
+        self.btn_calibrate.disable()
+        self.btn_tare.disable()
         self.btn_exit.disable()
-        pass
+        
 
     def on_stop(self):
         self.btn_start.toogle()
         self.btn_stop.toogle()
+
+        CGMeter().stop_reading()
+
+        for key in self.lb_weights:
+            self.lb_weights[key].place_hide()
+
+        self.message = ""
+        self.btn_calibrate.enable()
+        self.btn_tare.enable()
         self.btn_exit.enable()
-        pass
+        
+    def on_display_weights(self, weights):
+        try:
+            if weights is None:
+                for key in self.lb_weights:
+                    self.lb_weights[key].text = ""
+                
+            else:
+                total_weight = 0
+                mwheels_weight = 0
+                for mod_name, weight in weights.items():
+                    if mod_name == "LeftWheel":
+                        self.lb_weights[mod_name].text = f'{int(round(weight))} g'
+                        mwheels_weight += weight
+                        total_weight += weight
+                    elif mod_name == "RightWheel":
+                        self.lb_weights[mod_name].text = f'{int(round(weight))} g'
+                        mwheels_weight += weight
+                        total_weight += weight
+                    elif mod_name == "TailWheel":
+                        self.lb_weights[mod_name].text = f'{int(round(weight))} g'
+                        total_weight += weight
+                
+                self.lb_weights['mwheels'].text = f'{int(round(mwheels_weight))} g'
+                self.lb_weights['total'].text = f'{int(round(total_weight))} g'
+                self.mainwindow.update()
+        except BaseException as e:
+                self.__logger.error("Error updating weights: " + str(e))
 
     ''' Private methods'''
     def __goodbye(self):
