@@ -1,9 +1,33 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
 '''
- # @ Author: Wilfried Grousson
- # @ Created: 2023-01-11
- # @ License: MIT
- # @ Description: An HX711 emulator to test code on other platforme than the Raspberry Pi or if no load cell connected.
- '''
+## An HX711 emulator to test code on other platform than the Raspberry Pi or if no load cell connected.
+
+Author: Wilfried Grousson
+Created Date: 2023/01/13
+------------------------------------
+MIT License
+
+Copyright (c) 2023 WG
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+'''
 
 import time
 import random
@@ -24,7 +48,7 @@ class HX711:
         self.sampleRateHz = 80.0
         self.resetTimeStamp = time.time()
         self.sampleCount = 0
-        self.simulateTare = False
+        self.simulateTare = True
 
         # Mutex for reading from the HX711, in case multiple threads in client
         # software try to access get values from the class at the same time.
@@ -212,11 +236,11 @@ class HX711:
     def zero(self, readings=30):
         # If we aren't simulating Taring because it takes too long, just skip it.
         if not self.simulateTare:
-            return 0
+            return False
 
         # Backup REFERENCE_UNIT value
         reference_unit = self.REFERENCE_UNIT
-        self.set_reference_unit(1)
+        self.set_scale_ratio(1)
 
         value = self.get_raw_data_mean(readings)
 
@@ -226,9 +250,10 @@ class HX711:
         self.set_offset(value)
 
         # Restore the reference unit, now that we've got our offset.
-        self.set_reference_unit(reference_unit)
-
-        return value;
+        self.set_scale_ratio(reference_unit)
+        # wait for the sensor to stabilize
+        time.sleep(1)
+        return False
 
     
     def set_reading_format(self, byte_format="LSB", bit_format="MSB"):

@@ -1,10 +1,34 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
 '''
- # @ Author: Wilfried Grousson
- # @ Created: 2023-01-11
- # @ License: MIT
- # @ Description: a collection of cg gauge modules
- '''
- 
+## a collection of cg gauge modules
+
+Author: Wilfried Grousson
+Created Date: 2023/01/13
+------------------------------------
+MIT License
+
+Copyright (c) 2023 WG
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+'''
+
 import json
 import logging
 import constants
@@ -12,14 +36,16 @@ import threading
 import time
 from . import cg_gauge
 
-class CGMeter :
-    def __init__(self, configfile : str):
-        self.__logger = logging.getLogger(constants.APP_NAME)
+class Singleton:
+    _instance = None
 
-        self.__configfile = configfile
-        self.__load_from_file()
+    def  __new__(cls):
+        if not cls._instance:
+            cls._instance = super(Singleton, cls).__new__(cls)
+        return cls._instance
 
-        self.__running = False
+class CGMeter(Singleton) :
+    _initialize = False
 
     def __load_from_file(self):
         self.__logger.debug("Loading CGMeter config from file: %s", self.__configfile)
@@ -50,7 +76,7 @@ class CGMeter :
             values = {}
             for module in self.__modules:
                 if module.initialized:
-                    values[module.name] = module.getWeight(10)
+                    values[module.name] = module.getWeight(6)
             
             callback(values)
             time.sleep(0.1)
@@ -58,8 +84,18 @@ class CGMeter :
         callback(None)
         self.__logger.debug("CGMeter reading thread stopped")
         
-    def initialize(self, whichone : str = 'all'):
+    def initialize(self,configfile : str, whichone : str = 'all'):
+        if self._initialize:
+            raise Exception("CGMeter already initialized")
+
+        self.__logger = logging.getLogger(constants.APP_NAME)
+        self.__running = False
+        self._initialize = True
+
         try:
+            self.__configfile = configfile
+            self.__load_from_file()
+
             if whichone == 'all':
                 for module in self.__modules:
                     module.initialize()
@@ -121,7 +157,6 @@ class CGMeter :
         if self.__running:
             self.__running = False
             #self.__thread.join()
-    
     
     """Perhaps below this line should be deprecated in future ? Is there a need to thread 1 module reading ?"""
     def read_by_module(self, callback : callable, whichone : str = 'all') :
