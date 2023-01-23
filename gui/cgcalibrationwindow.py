@@ -34,10 +34,7 @@ from constants import APP_NAME
 import tkinter as tk
 import wgkinter as wk
 from wgkinter.modal import NoTitleBarModalDialog
-
 from modules.cg_meter import CGMeter
-
-
 
 class CGCalibrationWindow(NoTitleBarModalDialog):
     """The calibration modal dialog box to calibrate the different modules
@@ -85,7 +82,7 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
         label_weigth.configure(text='Enter the calibration weight in grams :')
         label_weigth.pack(side="left")
         entry_weight = wk.Entry(cal_weight)
-        self.calibration_weigth = tk.DoubleVar(value=50.0)
+        self.calibration_weigth = tk.IntVar(value=CGMeter().calibration_weight())
         entry_weight.configure(textvariable=self.calibration_weigth, width=10)
         entry_weight.pack(side="left", ipady=2)
         cal_weight.pack(fill="x", padx=200, pady=20, side="top")
@@ -135,7 +132,13 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
     def on_calibrate(self, module_name):
         logger = logging.getLogger(APP_NAME)
         logger.debug(f"Calbrating {module_name}")
-        known_weight_grams = self.calibration_weigth.get()
+        try:
+            known_weight_grams = self.calibration_weigth.get()
+        except BaseException as e:
+            wk.MessageDialog(self, "Error", "The calibration weight must be a number")
+            logger.error(f"The calibration weight must be a number: {str(e)}")
+            return
+
         if known_weight_grams <= 0:
             wk.MessageDialog(self, "Error", "The calibration weight must be greater than 0")
             logger.error("The calibration weight must be greater than 0")
