@@ -6,11 +6,11 @@ class CGWindowBase:
     def __init__(self, master=None):
         # build ui
         self.mainwindow = tk.Tk() if master is None else tk.Toplevel(master)
-        self.mainwindow.configure(background="#252526", height=480, width=800)
+        self.mainwindow.configure(background="#252526")
         self.mainwindow.geometry("800x480")
         self.mainwindow.overrideredirect("True")
         self.top_frame = tk.Frame(self.mainwindow)
-        self.top_frame.configure(background="#323233", height=30)
+        self.top_frame.configure(background="#323233", pady=2)
         self.lb_message = tk.Label(self.top_frame)
         self.lb_message_txt = tk.StringVar()
         self.lb_message.configure(
@@ -44,8 +44,8 @@ class CGWindowBase:
             font="{Arial} 6 {italic}",
             foreground="white",
             text='by WGS')
-        self.lb_author.grid(column=1, row=0, sticky="s")
-        self.top_frame.pack(fill="x", padx=5, pady=1, side="top")
+        self.lb_author.grid(column=1, row=0, sticky="s", padx="0 5")
+        self.top_frame.pack(fill="x", side="top")
         self.top_frame.columnconfigure(0, weight=1)
         self.content_frame = tk.Frame(self.mainwindow)
         self.content_frame.configure(background="#252526")
