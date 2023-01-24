@@ -36,11 +36,11 @@ APP_NAME = "CGMeter"
 APP_VERSION = "0.3.0"
 APP_AUTHOR = "Wilfried Grousson"
 APP_CONFIG_DIR = "config"
-APP_CG_CONFIG_NAME = "cgconfig.json"
 LOG_LEVEL = logging.DEBUG
 EMULATE_HX711 = False
 APP_ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-APP_CG_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,APP_CG_CONFIG_NAME)
+APP_CG_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"cgconfig.json")
+APP_PLANES_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"planes.json")
 
 ORIGIN = (244, 199)
 RWHEEL = (225, 99)

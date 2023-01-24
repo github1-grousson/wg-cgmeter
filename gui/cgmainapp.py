@@ -38,6 +38,7 @@ from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
 from gui.cgcalibrationwindow import CGCalibrationWindow
+from config.planemanager import PlaneManager
 
 class CGMainApp(CGWindowBase):
     """The main application window"""
@@ -61,7 +62,10 @@ class CGMainApp(CGWindowBase):
         self.mainwindow.configure(cursor="watch")
         self.mainwindow.update()
         self.message = "Initializing CG gauges..."
-        CGMeter().initialize(APP_CG_FILENAME)        
+        CGMeter().initialize(APP_CG_FILENAME)
+        #we also initalize the plane manager
+        PlaneManager().load()
+        PlaneManager().print_planes()
         self.message = "Inialization done."
         self.message = ""
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
