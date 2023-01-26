@@ -35,7 +35,7 @@ from constants import APP_NAME, APP_PLANES_FILENAME
 
 class Plane:
     """A plane and it's configuration"""
-    def __init__(self, name:str, wheelbase:int, wheeltrack:int, edge2cg:int, edge2mainwheels:int, edge2cgrange:tuple):
+    def __init__(self, name:str, wheelbase:int, wheeltrack:int, edge2cgx:int, edge2mainwheels:int, edge2cgxrange:tuple, origin2cgyrange):
         """Constructor
 
         Args:
@@ -49,12 +49,21 @@ class Plane:
         self.name = name
         self.wheelbase = wheelbase
         self.wheeltrack = wheeltrack
-        self.edge2cg = edge2cg
-        self.edge2cgrange = edge2cgrange
+        self.edge2cgx = edge2cgx
+        self.edge2cgxrange = edge2cgxrange
         self.edge2mainwheels = edge2mainwheels
+        self.origin2cgyrange = origin2cgyrange
+
+    @property
+    def cgx_range(self):
+        return (self.edge2cgxrange[0], self.edge2cgxrange[1])
+
+    @property
+    def cgy_range(self):
+        return (self.origin2cgyrange[0], self.origin2cgyrange[1])
 
     def __str__(self):
-        return f'Plane {self.name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2cg {self.edge2cg} mm, edge2mainwheels {self.edge2mainwheels} mm'
+        return f'Plane {self.name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2cg {self.edge2cgx} mm, edge2mainwheels {self.edge2mainwheels} mm'
 
 
 class PlaneManager:
@@ -157,6 +166,50 @@ class PlaneManager:
         else:
             raise ValueError(f'Plane {name} not found')
 
+    def compute_current_plane_cg(self, weights : dict):
+        """Compute the current plane center of gravity in relation to main wing leading edge and the roll axis
+
+        Args:
+            weights (dict): list of the weights of the wheels
+
+        Returns:
+            (int,int): the center of gravity position (x,y) in mm from the leading edge and roll axis, raise an exception if error
+        """
+        # compute the center of gravity
+        # CG(x) = d + (L*wT)/Wtot. Positive means that CG is in front of the leading edge
+        # d = distance from the leading edge to the main wheels, negative if the main wheels are in front the leading edge
+        # L = wheelbase
+        # wT = weight of the tail wheel
+        # Wtot = total weight of the plane
+        # CG(y) = (E / 2*Wtot) * (wR - wL). Positive means that CG is near the right wheel
+        # E = wheeltrack
+        # wR = weight of the right wheel
+        # wL = weight of the left wheel
+        # Wtot = total weight of the plane
+        try:
+            if self.__current_plane is None:
+                raise ValueError('No current plane')
+
+            wR = weights['RightWheel']
+            wL = weights['LeftWheel']
+            wT = weights['TailWheel']
+            Wtot = wR + wL + wT
+
+            # test if weights are close to 0, if yes the raise exception
+            if abs(Wtot) < 0.1 or abs(wR) < 0.1 or abs(wL) < 0.1 or abs(wT) < 0.1:
+                raise ValueError('Weights are too close to 0')
+
+            d = self.__current_plane.edge2mainwheels
+            L = self.__current_plane.wheelbase
+            E = self.__current_plane.wheeltrack
+            x = d + (L*wT)/Wtot
+            y = (E / (2*Wtot)) * (wR - wL)
+            return (int(round(x)),int(round(y)))
+
+        except BaseException as e:
+            self.__logger.error(f'Error while computing the center of gravity: {e}')
+            raise e
+
     def save(self):
         """Save the planes manager list to the config json file
         """
@@ -170,7 +223,7 @@ class PlaneManager:
         if result:
             self.__current_plane = self.__planes[0]
         else:
-            self.__current_plane = Plane('Default', 0, 0, 0, 0, (0,0))
+            self.__current_plane = Plane('Default', 0, 0, 0, 0, (0,0), (0,0))
             self.__planes.append(self.__current_plane)
             self.save()
 
