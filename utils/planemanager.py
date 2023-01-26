@@ -31,9 +31,11 @@ SOFTWARE.
 
 import json
 import logging
-from constants import APP_NAME, APP_PLANES_FILENAME
+import inspect
+from constants import APP_NAME, APP_PLANES_FILENAME, SCREEN_COORDINATES
+from utils.converter import CoordinateConverter
 
-class Plane:
+class Plane(CoordinateConverter):
     """A plane and it's configuration"""
     def __init__(self, name:str, wheelbase:int, wheeltrack:int, edge2cgx:int, edge2mainwheels:int, edge2cgxrange:tuple, origin2cgyrange):
         """Constructor
@@ -53,18 +55,117 @@ class Plane:
         self.edge2cgxrange = edge2cgxrange
         self.edge2mainwheels = edge2mainwheels
         self.origin2cgyrange = origin2cgyrange
+        super().__init__(SCREEN_COORDINATES, self.plane_coordinates)
+
+
+    def to_dict(self) -> dict:
+        data = vars(self).copy()
+        exclude_var = ['pixel_spacing', 'screen_origin']
+        for var in exclude_var:
+            if var in data:
+                del data[var]
+        return data
 
     @property
-    def cgx_range(self):
+    def cgx(self) -> tuple[int,int]:
+        return (self.edge2cgx,0)
+
+    @property
+    def cgx_range(self) -> tuple[int,int]:
         return (self.edge2cgxrange[0], self.edge2cgxrange[1])
 
     @property
-    def cgy_range(self):
+    def cgy_range(self) -> tuple[int,int]:
         return (self.origin2cgyrange[0], self.origin2cgyrange[1])
+
+    @property
+    def rwheelpos(self) -> tuple[float,float]:
+        return (self.edge2mainwheels, self.wheeltrack/2)
+
+    @property
+    def lwheelpos(self) -> tuple[float,float]:
+        return (self.edge2mainwheels, -self.wheeltrack/2)
+
+    @property
+    def twheelpos(self) -> tuple[float,float]:
+        return (self.edge2mainwheels + self.wheelbase, 0)
+
+    @property
+    def plane_coordinates(self) -> dict[str, tuple[float,float]]:
+        return {
+            'ORIGIN': (0,0),
+            'RWHEEL': self.rwheelpos,
+            'LWHEEL': self.lwheelpos,
+            'TWHEEL': self.twheelpos,
+            'NOSE': None
+        }
+
+    def color_in_range(self, cg_pos : int, axis : str = 'x') -> str:
+        """Return the color of text or drawing if the center of gravity is in range
+
+        Returns:
+            str: the color
+        """
+        if cg_pos is None:
+            return 'white'
+
+        if axis == 'x':
+            if self.edge2cgxrange[0] <= cg_pos <= self.edge2cgxrange[1]:
+                return 'green'
+            else:
+                return 'red'
+        elif axis == 'y':
+            if self.origin2cgyrange[0] <= cg_pos <= self.origin2cgyrange[1]:
+                return 'green'
+            else:
+                return 'red'
+        else:
+            return 'white'
+
+
+    def plane_cg_by_weigth(self, weights : dict) -> tuple[int,int]:
+        """Compute the plane center of gravity in relation to main wing leading edge and the roll axis
+
+        Args:
+            weights (dict): list of the weights of the wheels
+
+        Returns:
+            (int,int): the center of gravity position (x,y) in mm from the leading edge and roll axis, raise an exception if error
+        """
+        # compute the center of gravity
+        # CG(x) = d + (L*wT)/Wtot. Positive means that CG is in front of the leading edge
+        # d = distance from the leading edge to the main wheels, negative if the main wheels are in front the leading edge
+        # L = wheelbase
+        # wT = weight of the tail wheel
+        # Wtot = total weight of the plane
+        # CG(y) = (E / 2*Wtot) * (wR - wL). Positive means that CG is near the right wheel
+        # E = wheeltrack
+        # wR = weight of the right wheel
+        # wL = weight of the left wheel
+        # Wtot = total weight of the plane
+        try:
+            wR = weights['RightWheel']
+            wL = weights['LeftWheel']
+            wT = weights['TailWheel']
+            Wtot = wR + wL + wT
+
+            # test if weights are close to 0, if yes the raise exception
+            threshold = 5
+            if abs(Wtot) < threshold or abs(wR) < threshold or abs(wL) < threshold or abs(wT) < threshold:
+                raise ValueError('Weights are too close to 0')
+
+            d = self.edge2mainwheels
+            L = self.wheelbase
+            E = self.wheeltrack
+            x = d + (L*wT)/Wtot
+            y = (E / (2*Wtot)) * (wR - wL)
+            return (int(round(x)),int(round(y)))
+
+        except BaseException as e:
+            raise e
 
     def __str__(self):
         return f'Plane {self.name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2cg {self.edge2cgx} mm, edge2mainwheels {self.edge2mainwheels} mm'
-
 
 class PlaneManager:
     """The plane manager class, it is a singleton
@@ -80,12 +181,18 @@ class PlaneManager:
         return cls._instance
 
     def __init__(self):
-        """Nothing to do here, the singleton is already initialized and this methos is calld by every instance"""
+        """Nothing to do here, the singleton is already initialized and this method is instance called"""
         pass
+
+    def skip_key(self,key):
+        if key in ['pixel_spacing', 'screen_origin']:
+            return True
+        
+        return False
         
     def __to_json(self, filename:str):
         with open(filename, 'w') as f:
-            json.dump(self.__planes, f, default=lambda o: o.__dict__, indent=4)
+            json.dump(self.__planes, f, default=lambda o: o.to_dict(), indent=4)
 
     def __from_json(self, filename:str):
         try:
@@ -166,57 +273,16 @@ class PlaneManager:
         else:
             raise ValueError(f'Plane {name} not found')
 
-    def compute_current_plane_cg(self, weights : dict):
-        """Compute the current plane center of gravity in relation to main wing leading edge and the roll axis
-
-        Args:
-            weights (dict): list of the weights of the wheels
-
-        Returns:
-            (int,int): the center of gravity position (x,y) in mm from the leading edge and roll axis, raise an exception if error
-        """
-        # compute the center of gravity
-        # CG(x) = d + (L*wT)/Wtot. Positive means that CG is in front of the leading edge
-        # d = distance from the leading edge to the main wheels, negative if the main wheels are in front the leading edge
-        # L = wheelbase
-        # wT = weight of the tail wheel
-        # Wtot = total weight of the plane
-        # CG(y) = (E / 2*Wtot) * (wR - wL). Positive means that CG is near the right wheel
-        # E = wheeltrack
-        # wR = weight of the right wheel
-        # wL = weight of the left wheel
-        # Wtot = total weight of the plane
-        try:
-            if self.__current_plane is None:
-                raise ValueError('No current plane')
-
-            wR = weights['RightWheel']
-            wL = weights['LeftWheel']
-            wT = weights['TailWheel']
-            Wtot = wR + wL + wT
-
-            # test if weights are close to 0, if yes the raise exception
-            if abs(Wtot) < 0.1 or abs(wR) < 0.1 or abs(wL) < 0.1 or abs(wT) < 0.1:
-                raise ValueError('Weights are too close to 0')
-
-            d = self.__current_plane.edge2mainwheels
-            L = self.__current_plane.wheelbase
-            E = self.__current_plane.wheeltrack
-            x = d + (L*wT)/Wtot
-            y = (E / (2*Wtot)) * (wR - wL)
-            return (int(round(x)),int(round(y)))
-
-        except BaseException as e:
-            self.__logger.error(f'Error while computing the center of gravity: {e}')
-            raise e
-
     def save(self):
         """Save the planes manager list to the config json file
         """
         self.__to_json(self.__configfile)
 
-    def load(self):
+    def load(self) -> Plane:
         """Load the planes manager list from the config json file
+
+        Returns:
+            Plane: the current plane
         """
         result = self.__from_json(self.__configfile)
         #select first plane as current if result is True else create an empty default plane and save it
@@ -226,6 +292,8 @@ class PlaneManager:
             self.__current_plane = Plane('Default', 0, 0, 0, 0, (0,0), (0,0))
             self.__planes.append(self.__current_plane)
             self.save()
+
+        return self.__current_plane
 
     def print_planes(self):
         for p in self.__planes:
