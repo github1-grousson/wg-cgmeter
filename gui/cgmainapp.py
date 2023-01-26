@@ -28,6 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 '''
+import time
 import platform
 import logging
 import logging.handlers
@@ -149,6 +150,7 @@ class CGMainApp(CGWindowBase):
 
         self.message = ""
         self.disable_buttons()
+        time.sleep(0.5)
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
         
     def on_display_weights(self, weights):
@@ -175,9 +177,32 @@ class CGMainApp(CGWindowBase):
                 
                 self.lb_weights['mwheels'].text = f'{int(round(mwheels_weight))} g'
                 self.lb_weights['total'].text = f'{int(round(total_weight))} g'
-                self.mainwindow.update()
+                
+                CG = PlaneManager().compute_current_plane_cg(weights)
+                CGmin = PlaneManager().get_current_plane().cgx_range[0]
+                CGmax = PlaneManager().get_current_plane().cgx_range[1]
+                if CG[0] < CGmin or CG[0] > CGmax:
+                    self.lb_cg_position[0]['foreground'] = 'red'
+                else:
+                    self.lb_cg_position[0]['foreground'] = 'green'
+                    
+                self.lb_cg_position[0].text = f'{CGmin} < {CG[0]} < {CGmax} mm'
+
+                
+                if CG[1] < PlaneManager().get_current_plane().cgy_range[0] or CG[1] > PlaneManager().get_current_plane().cgy_range[1]:
+                    self.lb_cg_position[1]['foreground'] = 'red'
+                else:
+                    self.lb_cg_position[1]['foreground'] = 'green'
+
+                self.lb_cg_position[1].text = f'{CG[1]} mm'
         except BaseException as e:
                 self.__logger.error("Error updating weights: " + str(e))
+                self.lb_cg_position[0].text = f'NaN'
+                self.lb_cg_position[0]['foreground'] = 'white'
+                self.lb_cg_position[1].text = f'Nan'
+                self.lb_cg_position[1]['foreground'] = 'white'
+        finally:
+            self.mainwindow.update()
 
     ''' Private methods'''
     def __goodbye(self):

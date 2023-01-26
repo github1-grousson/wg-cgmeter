@@ -69,6 +69,15 @@ class CGWindowBase:
         self.canvas.configure(background="#252526", borderwidth=0, highlightthickness=0)
         self.canvas.pack(side="top",fill="both", expand="yes")
 
+        self.lb_cg_position = []
+        self.lb_cg_position.append(wk.Label(self.content_frame))
+        self.lb_cg_position.append(wk.Label(self.content_frame))
+        for i in range(2):
+            self.lb_cg_position[i].configure(highlightbackground="#007fd4", highlightthickness=1, text=f'{0} mm')
+        
+        self.lb_cg_position[0].place(anchor="w", relx=0, rely=0, x=const.ORIGIN[0], y=20, width=200)
+        self.lb_cg_position[1].place(anchor="w", relx=0, rely=0.5, width=80)
+
         self.lb_weights = {}
         self.lb_weights['total'] = wk.Label(self.content_frame)
         self.lb_weights['mwheels'] = wk.Label(self.content_frame)
