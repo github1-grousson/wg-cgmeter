@@ -40,7 +40,7 @@ from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
 from gui.cgcalibrationwindow import CGCalibrationWindow
 from utils.planemanager import PlaneManager
-from utils.drawings import Circle
+from utils.drawings import Circle, RoundedRectangle
 
 class CGMainApp(CGWindowBase):
     """The main application window"""
@@ -58,6 +58,9 @@ class CGMainApp(CGWindowBase):
                 self.__buttons[c_var] = c_vars[c_var]
 
         self.disable_buttons()
+
+        self.ref_cg_dwg = None
+        self.cg_dwg = None
     
     ''' Private methods call by threads'''
     def __initialize_cgmeter(self):
@@ -68,10 +71,9 @@ class CGMainApp(CGWindowBase):
         #we also initalize the plane manager
         plane = PlaneManager().load()
         PlaneManager().print_planes()
-        #we initialize CG points
-        self.cg_dwg = Circle(self.canvas, plane.mm_to_screen((0,0)))
-        self.cg_dwg.draw()
-
+        #we initialize CG points from current plane
+        self.__update_UI()
+        
         self.message = "Inialization done."
         self.message = ""
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
@@ -145,7 +147,7 @@ class CGMainApp(CGWindowBase):
             self.lb_weights[key].place_show()
 
         self.message = "Reading..."
-        CGMeter().start_reading(self.on_display_weights)
+        CGMeter().start_reading(self.on_display_readings)
                 
     def on_stop(self):
         
@@ -159,7 +161,42 @@ class CGMainApp(CGWindowBase):
         time.sleep(0.5)
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
         
-    def on_display_weights(self, weights):
+    def on_display_readings(self, weights):
+        try:
+            self.__display_weights_values(weights)
+            CGpos = self.__display_cg_values(weights)
+            if CGpos is not None:
+                self.__draw_cg(CGpos)
+
+        except BaseException as e:
+                self.__logger.error("Error displaying results: " + str(e))
+                
+        finally:
+            self.mainwindow.update()
+
+    ''' Private methods'''
+    def __update_UI(self):
+        plane = PlaneManager().get_current_plane()
+
+        point1 = (plane.cgx_range[0], plane.cgy_range[1])
+        point2 = (plane.cgx_range[1], plane.cgy_range[0])
+
+        point1 = plane.mm_to_screen(point1)
+        point2 = plane.mm_to_screen(point2)
+        
+        if self.ref_cg_dwg is not None:
+            self.ref_cg_dwg.delete()
+
+        self.ref_cg_dwg = RoundedRectangle(self.canvas, point1, point2, color = '#007fd4')
+        self.ref_cg_dwg.draw()
+
+        if self.cg_dwg is not None:
+            self.cg_dwg.delete()
+
+        self.cg_dwg = Circle(self.canvas, plane.mm_to_screen((0,0)))
+        self.cg_dwg.draw()
+
+    def __display_weights_values(self, weights):
         try:
             if weights is None:
                 for key in self.lb_weights:
@@ -184,43 +221,37 @@ class CGMainApp(CGWindowBase):
                 self.lb_weights['mwheels'].text = f'{int(round(mwheels_weight))} g'
                 self.lb_weights['total'].text = f'{int(round(total_weight))} g'
                 
-                CGpos = self.__display_cg_values(weights)
-                if CGpos is not None:
-                    self.__draw_cg(CGpos)
-
         except BaseException as e:
-                self.__logger.error("Error updating weights: " + str(e))
-                self.lb_cg_position[0].text = f'NaN'
-                self.lb_cg_position[0]['foreground'] = 'white'
-                self.lb_cg_position[1].text = f'Nan'
-                self.lb_cg_position[1]['foreground'] = 'white'
-        finally:
-            self.mainwindow.update()
-
-    ''' Private methods'''
+                self.__logger.error("Error displaying weights: " + str(e))
+                
     def __display_cg_values(self, weights) -> tuple[int,int]:
         try:
             the_plane = PlaneManager().get_current_plane()
             CG = the_plane.plane_cg_by_weigth(weights)
-            self.lb_cg_position[0]['foreground'] = the_plane.color_in_range(CG[0],'x')
-
-            CGmin = the_plane.cgx_range[0]
-            CGmax = the_plane.cgx_range[1]
-            self.lb_cg_position[0].text = f'{CGmin} < {CG[0]} < {CGmax} mm'
-            """
-            if CG[0] < CGmin or CG[0] > CGmax:
-                self.lb_cg_position[0]['foreground'] = 'red'
+            
+            # we start with the x axis
+            CGx = CG[0]
+            CGXmin = the_plane.cgx_range[0]
+            CGXmax = the_plane.cgx_range[1]
+            cgx_text = ""
+            if CGx < CGXmin:
+                cgx_text = f'{CGx} mm [ {CGXmin} - {CGXmax} ]'
+            elif CGx > CGXmax:
+                cgx_text = f'[ {CGXmin} - {CGXmax} ] {CGx} mm'
             else:
-                self.lb_cg_position[0]['foreground'] = 'green'
-            """
-                
+                cgx_text = f'{CGXmin} [ {CGx} mm ] {CGXmax}'
+
+            self.lb_cg_position[0].text = cgx_text
+            self.lb_cg_position[0]['foreground'] = the_plane.color_in_range(CGx,'x')
             
-            
-            self.lb_cg_position[1]['foreground'] = the_plane.color_in_range(CG[1],'y')
+            # now the y axis                     
             self.lb_cg_position[1].text = f'{CG[1]} mm'
+            self.lb_cg_position[1]['foreground'] = the_plane.color_in_range(CG[1],'y')
+                        
             return CG
+
         except BaseException as e:
-            self.__logger.debug("Error updating weights: " + str(e))
+            self.__logger.debug("Error displaying CG positions: " + str(e))
             self.lb_cg_position[0].text = f'NaN'
             self.lb_cg_position[0]['foreground'] = 'white'
             self.lb_cg_position[1].text = f'Nan'
