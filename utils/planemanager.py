@@ -37,23 +37,22 @@ from utils.converter import CoordinateConverter
 
 class Plane(CoordinateConverter):
     """A plane and it's configuration"""
-    def __init__(self, name:str, wheelbase:int, wheeltrack:int, edge2cgx:int, edge2mainwheels:int, edge2cgxrange:tuple, origin2cgyrange):
+    def __init__(self, name:str, wheelbase:int, wheeltrack:int, edge2mainwheels:int, edge2cgxrange:tuple[int,int], origin2cgyrange:tuple[int,int]):
         """Constructor
 
         Args:
             name (str): Plane name
             wheelbase (int): The wheelbase in mm
             wheeltrack (int): The wheeltrack in mm
-            edge2cg (int): The distance from the leading edge to the center of gravity in mm
-            edge2cgrange (tuple): The range of the distance from the leading edge to the center of gravity in mm
+            edge2cgxrange (tuple): The range of the X distance from the leading edge to the center of gravity in mm
+            origin2cgyrange (tuple): The range of the Y distance from the origin to the center of gravity in mm
             edge2mainwheels (int): The distance from the leading edge to the main wheels in mm
         """
         self.name = name
         self.wheelbase = wheelbase
         self.wheeltrack = wheeltrack
-        self.edge2cgx = edge2cgx
-        self.edge2cgxrange = edge2cgxrange
         self.edge2mainwheels = edge2mainwheels
+        self.edge2cgxrange = edge2cgxrange
         self.origin2cgyrange = origin2cgyrange
         super().__init__(SCREEN_COORDINATES, self.plane_coordinates)
 
@@ -65,10 +64,6 @@ class Plane(CoordinateConverter):
             if var in data:
                 del data[var]
         return data
-
-    @property
-    def cgx(self) -> tuple[int,int]:
-        return (self.edge2cgx,0)
 
     @property
     def cgx_range(self) -> tuple[int,int]:
@@ -165,7 +160,7 @@ class Plane(CoordinateConverter):
             raise e
 
     def __str__(self):
-        return f'Plane {self.name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2cg {self.edge2cgx} mm, edge2mainwheels {self.edge2mainwheels} mm'
+        return f'Plane {self.name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2mainwheels {self.edge2mainwheels} mm, edge2cgX {self.edge2cgxrange} mm, origin2cgY {self.origin2cgyrange} mm'
 
 class PlaneManager:
     """The plane manager class, it is a singleton
