@@ -232,3 +232,6 @@ class CGModule ():
             self.__logger.error("Error getting CGModule(%s) weight: %s", self.__name,  str(e))
         
         return self.__last_value
+
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")

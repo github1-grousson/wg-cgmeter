@@ -298,3 +298,8 @@ class PlaneManager:
     def print_planes(self):
         for p in self.__planes:
             self.__logger.debug(p)
+
+
+
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")

@@ -42,17 +42,13 @@ APP_ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 APP_CG_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"cgconfig.json")
 APP_PLANES_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"planes.json")
 
-ORIGIN = (244, 199) #this is the wing leading edge screen coordinates
-RWHEEL = (225, 99)  #this is right wheel screen coordinates
-LWHEEL = (225, 299) #this is left wheel screen coordinates
-TWHEEL = (643, 199) #this is tail wheel screen coordinates
-NOSE = (80, 199)    #this is nose screen coordinates
+ORIGIN = (244, 204) #this is the wing leading edge screen coordinates
+RWHEEL = (225, 100)  #this is right wheel screen coordinates
+LWHEEL = (225, 300) #this is left wheel screen coordinates
+TWHEEL = (660, 204) #this is tail wheel screen coordinates
+NOSE = (80, 204)    #this is nose screen coordinates
 
 SCREEN_COORDINATES = {'ORIGIN': ORIGIN, 'RWHEEL': RWHEEL, 'LWHEEL': LWHEEL, 'TWHEEL': TWHEEL, 'NOSE': NOSE}
 
-"""
-RWHEEL = (225-244, 99-199)
-LWHEEL = (225-244, 299-199)
-TWHEEL = (643-244, 199-199)
-NOSE = (80-244, 199-199)
-"""
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")

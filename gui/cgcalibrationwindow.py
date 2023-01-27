@@ -162,3 +162,5 @@ class CGCalibrationWindow(NoTitleBarModalDialog):
             wk.MessageDialog(self, "Error", f"Error during calibration : {e}")
 
   
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")

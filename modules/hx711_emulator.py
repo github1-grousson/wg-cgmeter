@@ -362,3 +362,6 @@ class HX711:
 
 
 # EOF - emulated_hx711.py
+
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")

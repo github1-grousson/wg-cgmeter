@@ -152,5 +152,4 @@ class CGWindowBase:
 
 
 if __name__ == "__main__":
-    app = CGWindowBase()
-    app.run()
+    raise Exception("This is a module, not a program. It should not be run directly.")
