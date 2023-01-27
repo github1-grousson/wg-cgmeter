@@ -49,10 +49,10 @@ class CoordinateConverter:
     def mm_to_screen(self, mm_point : tuple[float,float]):
         if mm_point is None:
             return None
-            
+
         mm_x, mm_y = mm_point
         screen_x = (mm_x * self.pixel_spacing[0]) + self.screen_origin[0]
-        screen_y = (mm_y * self.pixel_spacing[1]) + self.screen_origin[1]
+        screen_y = (mm_y * self.pixel_spacing[1]) * (-1.0) + self.screen_origin[1] # Y (mm) axis is inverted compared to screen y axis
         return (screen_x, screen_y)
 
     def screen_to_mm(self, screen_point):
