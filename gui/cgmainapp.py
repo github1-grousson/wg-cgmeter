@@ -36,13 +36,11 @@ import wgkinter as wk
 
 ''' Personal imports '''
 from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
-import constants
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
 from gui.cgcalibrationwindow import CGCalibrationWindow
 from utils.planemanager import PlaneManager
-from utils.converter import CoordinateConverter
-from utils.drawings import DrawerHelper
+from utils.drawings import Circle
 
 class CGMainApp(CGWindowBase):
     """The main application window"""
@@ -71,7 +69,8 @@ class CGMainApp(CGWindowBase):
         plane = PlaneManager().load()
         PlaneManager().print_planes()
         #we initialize CG points
-        self.cg_dwg = DrawerHelper.draw_circle(self.canvas, plane.mm_to_screen(plane.cgx))
+        self.cg_dwg = Circle(self.canvas, plane.mm_to_screen((0,0)))
+        self.cg_dwg.draw()
 
         self.message = "Inialization done."
         self.message = ""
@@ -112,6 +111,9 @@ class CGMainApp(CGWindowBase):
     ''' Handlers methods'''
     def on_motion(self, event):
         self.message = ("x: " + str(event.x) + " y: " + str(event.y))
+        
+        if self.cg_dwg is not None:
+            self.cg_dwg.move_to((event.x, event.y))
         
     def on_exit(self):
         self.__goodbye()
@@ -227,10 +229,10 @@ class CGMainApp(CGWindowBase):
 
     def __draw_cg(self, cg_position : tuple[int,int]):
         try:
-            #conv = CoordinateConverter(constants.SCREEN_COORDINATES, PlaneManager().get_current_plane().plane_coordinates)
             plane = PlaneManager().get_current_plane()
-            DrawerHelper.move_item_to(self.canvas, self.cg_dwg, plane.mm_to_screen(cg_position))
-            DrawerHelper.change_item_color(self.canvas, self.cg_dwg, plane.color_in_range(cg_position[0],'x'))
+            self.cg_dwg.move_to(plane.mm_to_screen(cg_position))
+            self.cg_dwg.change_color(plane.color_in_range(cg_position[0],'x'))
+           
         except BaseException as e:
             self.__logger.debug("Error drawing CG: " + str(e))     
 
@@ -267,3 +269,5 @@ class CGMainApp(CGWindowBase):
             if button in which_buttons:
                 self.__buttons[button].config(state="normal")
         
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")
