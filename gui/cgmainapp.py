@@ -32,9 +32,9 @@ import time
 import platform
 import logging
 import logging.handlers
-import wgkinter as wk
 
 ''' Personal imports '''
+import wgkinter as wk
 from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
@@ -66,14 +66,14 @@ class CGMainApp(CGWindowBase):
     def __initialize_cgmeter(self):
         self.mainwindow.configure(cursor="watch")
         self.mainwindow.update()
+        self.message = "Loading default plane..."
+        #initalize the plane manager & UI
+        plane = PlaneManager().load()
+        self.__update_UI()
+
         self.message = "Initializing CG gauges..."
         CGMeter().initialize(APP_CG_FILENAME)
-        #we also initalize the plane manager
-        plane = PlaneManager().load()
-        PlaneManager().print_planes()
-        #we initialize CG points from current plane
-        self.__update_UI()
-        
+                
         self.message = "Inialization done."
         self.message = ""
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
@@ -146,6 +146,11 @@ class CGMainApp(CGWindowBase):
         for key in self.lb_weights:
             self.lb_weights[key].place_show()
 
+        for label in self.lb_cg_position:
+            label.place_show()
+
+        self.cg_dwg.show()
+
         self.message = "Reading..."
         CGMeter().start_reading(self.on_display_readings)
                 
@@ -156,17 +161,24 @@ class CGMainApp(CGWindowBase):
         for key in self.lb_weights:
             self.lb_weights[key].place_hide()
 
-        self.message = ""
+        for label in self.lb_cg_position:
+            label.place_hide()
+
+        self.cg_dwg.move_to((-100,-100))
+        self.cg_dwg.change_color('white')
+        self.cg_dwg.hide()
+
         self.disable_buttons()
-        time.sleep(0.5)
         self.enable_buttons('btn_calibrate','btn_tare','btn_start', 'btn_exit')
+        self.message = ""
         
     def on_display_readings(self, weights):
         try:
-            self.__display_weights_values(weights)
-            CGpos = self.__display_cg_values(weights)
-            if CGpos is not None:
-                self.__draw_cg(CGpos)
+            if weights is not None:
+                self.__display_weights_values(weights)
+                CGpos = self.__display_cg_values(weights)
+                if CGpos is not None:
+                    self.__draw_cg(CGpos)
 
         except BaseException as e:
                 self.__logger.error("Error displaying results: " + str(e))
@@ -195,6 +207,7 @@ class CGMainApp(CGWindowBase):
 
         self.cg_dwg = Circle(self.canvas, plane.mm_to_screen((0,0)))
         self.cg_dwg.draw()
+        self.cg_dwg.hide()
 
     def __display_weights_values(self, weights):
         try:
@@ -241,12 +254,14 @@ class CGMainApp(CGWindowBase):
             else:
                 cgx_text = f'{CGXmin} [ {CGx} mm ] {CGXmax}'
 
-            self.lb_cg_position[0].text = cgx_text
-            self.lb_cg_position[0]['foreground'] = the_plane.color_in_range(CGx,'x')
+            if self.lb_cg_position[0] is not None:
+                self.lb_cg_position[0].text = cgx_text
+                self.lb_cg_position[0]['foreground'] = the_plane.color_in_range(CGx,'x')
             
             # now the y axis                     
-            self.lb_cg_position[1].text = f'{CG[1]} mm'
-            self.lb_cg_position[1]['foreground'] = the_plane.color_in_range(CG[1],'y')
+            if self.lb_cg_position[1] is not None:
+                self.lb_cg_position[1].text = f'{CG[1]} mm'
+                self.lb_cg_position[1]['foreground'] = the_plane.color_in_range(CG[1],'y')
                         
             return CG
 

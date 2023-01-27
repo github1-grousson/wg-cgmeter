@@ -73,6 +73,9 @@ class CGWindowBase:
         self.lb_cg_position[0].place(anchor="w", relx=0, rely=0, x=const.ORIGIN[0], y=20, width=200)
         self.lb_cg_position[1].place(anchor="w", relx=0, rely=0.5, width=75)
 
+        for label in self.lb_cg_position:
+            label.place_hide()
+
         self.lb_weights = {}
         self.lb_weights['total'] = wk.Label(self.content_frame)
         self.lb_weights['mwheels'] = wk.Label(self.content_frame)

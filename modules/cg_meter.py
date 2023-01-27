@@ -161,7 +161,7 @@ class CGMeter(Singleton) :
             self.__running = False
             #self.__thread.join()
 
-
+    
     def calibration_weight(self):
         return self.__calibration_weight
 

@@ -35,8 +35,54 @@ DEFAULT_RADIUS = 5
 X_CORRECTION = 0
 Y_CORRECTION = -3
 
-# class circle to draw a circle on a given canvas with a given center and radius
-class Circle:
+class Drawing:
+    """Base class for drawing in the canvas"""
+    def __init__(self, canvas : tk.Canvas, color="white", width=1):
+        """Constructor
+
+        Args:
+            canvas (tk.Canvas): canvas to draw on
+            color (str, optional): color of the drawing. Defaults to "white".
+            width (int, optional): width of the drawing. Defaults to 1.
+        """
+        self.canvas = canvas
+        self.color = color
+        self.width = width
+        self.id = None
+
+    def delete(self):
+        """Delete the drawing from the canvas"""
+        if self.id is not None:
+            self.canvas.delete(self.id)
+
+    def change_color(self, color):
+        """Change the color of the item
+
+        Args:
+            color (str): The new color
+        """
+        if self.id is not None:
+            self.canvas.itemconfig(self.id, fill=color, outline=color)
+
+    def show(self):
+        """Show the drawing"""
+        if self.id is not None:
+            self.canvas.itemconfig(self.id, state=tk.NORMAL)
+
+    def hide(self):
+        """Hide the drawing"""
+        if self.id is not None:
+            self.canvas.itemconfig(self.id, state=tk.HIDDEN)
+
+    ''' methods to be overridden in subclasses'''
+    def draw(self):
+        raise NotImplementedError("draw method must be implemented")
+
+    def move_to(self, center : tuple[int,int]):
+        raise NotImplementedError("move_to method must be implemented")
+
+   
+class Circle (Drawing):
     """Circle class to draw a circle on a canvas"""
     def __init__(self, canvas : tk.Canvas, center : tuple[int,int], radius = DEFAULT_RADIUS, color="white", width=1):
         """Constructor
@@ -48,13 +94,10 @@ class Circle:
             color (str, optional): color of the circle. Defaults to "white".
             width (int, optional): width of the circle. Defaults to 1.
         """
-        self.canvas = canvas
+        super().__init__(canvas, color, width)
         self.center = center
         self.radius = radius
-        self.color = color
-        self.width = width
-        self.id = None
-
+        
     def draw(self):
         """Draw the circle on the canvas"""
         if self.center is not None and self.canvas is not None:
@@ -79,22 +122,7 @@ class Circle:
         except Exception as e:
             raise e
 
-    def change_color(self, color):
-        """Change the color of the circle
-
-        Args:
-            color (str): The new color
-        """
-        if self.id is not None:
-            self.canvas.itemconfig(self.id, fill=color, outline=color)
-
-    def delete(self):
-        """Delete the circle from the canvas"""
-        if self.id is not None:
-            self.canvas.delete(self.id)
-    
-
-class RoundedRectangle:
+class RoundedRectangle(Drawing):
     """Rounded rectangle class to draw a rounded rectangle on a canvas"""
     
     def __init__(self, canvas : tk.Canvas, nw_point : tuple[int,int], se_point : tuple[int,int], radius : int = DEFAULT_RADIUS, color="white", border_width=1):
@@ -108,13 +136,10 @@ class RoundedRectangle:
             color (str, optional): color of the rectangle. Defaults to "white".
             border_width (int, optional): border width of the rectangle. Defaults to 1.
         """
-        self.canvas = canvas
+        super().__init__(canvas, color, border_width)
         self.nw_point = nw_point
         self.se_point = se_point
         self.radius = radius
-        self.color = color
-        self.border_width = border_width
-        self.id = None
 
     def draw(self):
         """Draw the rectangle on the canvas"""
@@ -123,15 +148,13 @@ class RoundedRectangle:
             y1 = self.nw_point[1] + Y_CORRECTION
             x2 = self.se_point[0] + X_CORRECTION
             y2 = self.se_point[1] + Y_CORRECTION
-            self.id = self.__round_rectangle(x1, y1, x2, y2, self.radius, outline=self.color, width=self.border_width, fill='')
+            self.id = self.__round_rectangle(x1, y1, x2, y2, self.radius, outline=self.color, width=self.width, fill='')
         else :
             self.id = None
             raise Exception(f'Cannot draw rectangle on canvas {self.canvas}')
 
-    def delete(self):
-        """Delete the rectangle from the canvas"""
-        if self.id is not None:
-            self.canvas.delete(self.id)
+    def move_to(self, nw_point : tuple[int,int]):
+        raise NotImplementedError("move_to method must be implemented")
 
     '''Private methods below'''    
     def __round_rectangle(self, x1, y1, x2, y2, radius, **kwargs):
