@@ -57,6 +57,8 @@ class CGWindowBase:
         
         self.content_frame = tk.Frame(self.mainwindow)
         self.content_frame.configure(background="#252526")
+        
+        # the canvas frame
         self.img = Image.open(os.path.join(const.APP_ROOT_FOLDER,"gui","top_view_800.png"))
         self.sketch = ImageTk.PhotoImage(self.img)
         self.canvas = tk.Canvas(self.content_frame, width=self.img.size[0], height=self.img.size[1])
@@ -64,6 +66,46 @@ class CGWindowBase:
         self.canvas.configure(background="#252526", borderwidth=0, highlightthickness=0)
         self.canvas.pack(side="top",fill="both", expand="yes")
 
+        # the model name and menu
+        self.model_frame = tk.Frame(self.content_frame)
+        self.model_frame.configure(background="#252526")
+        self.lb_model = tk.Label(self.model_frame)
+        self.lb_model_name = tk.StringVar()
+        self.lb_model.configure(
+            background="#252526",
+            font="{Arial} 12 {italic}",
+            foreground="white",
+            textvariable=self.lb_model_name)
+        self.lb_model.pack(side="left")
+        """ Activate in next version
+        self.menu_btn_model = tk.Menubutton(self.model_frame)
+        self.menu_btn_model.configure(
+            activebackground="#252526",
+            activeforeground="#0e639c",
+            background="#252526",
+            font="{Wingdings} 12 {}",
+            foreground="white",
+            highlightthickness=0,
+            relief="flat",
+            text='▼')
+        self.menu_model = tk.Menu(self.menu_btn_model)
+        self.menu_model.configure(
+            activebackground="#0e639c",
+            activeborderwidth=0,
+            activeforeground="white",
+            background="#333333",
+            borderwidth=0,
+            font="{Arial} 10 {}",
+            foreground="white",
+            selectcolor="#2a2d2e")
+        self.menu_model.add("command", label='    Model 1 ')
+        self.menu_model.add("command", label='    Model 2 ')
+        self.menu_btn_model.configure(menu=self.menu_model)
+        self.menu_btn_model.pack(side="right")
+        """
+        self.model_frame.place(anchor="ne", relx=1.0)
+
+        # the weights and CG labels
         self.lb_cg_position = []
         self.lb_cg_position.append(wk.Label(self.content_frame))
         self.lb_cg_position.append(wk.Label(self.content_frame))

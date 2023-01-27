@@ -68,7 +68,7 @@ class CGMainApp(CGWindowBase):
         self.mainwindow.update()
         self.message = "Loading default plane..."
         #initalize the plane manager & UI
-        plane = PlaneManager().load()
+        PlaneManager().load()
         self.__update_UI()
 
         self.message = "Initializing CG gauges..."
@@ -158,6 +158,8 @@ class CGMainApp(CGWindowBase):
         
         CGMeter().stop_reading()
 
+        time.sleep(1.5)
+
         for key in self.lb_weights:
             self.lb_weights[key].place_hide()
 
@@ -189,6 +191,12 @@ class CGMainApp(CGWindowBase):
     ''' Private methods'''
     def __update_UI(self):
         plane = PlaneManager().get_current_plane()
+
+        if plane is None:
+            raise Exception("No plane defined.")
+
+        self.lb_model_name.set(plane.name)
+
 
         point1 = (plane.cgx_range[0], plane.cgy_range[1])
         point2 = (plane.cgx_range[1], plane.cgy_range[0])
@@ -269,7 +277,7 @@ class CGMainApp(CGWindowBase):
             self.__logger.debug("Error displaying CG positions: " + str(e))
             self.lb_cg_position[0].text = f'NaN'
             self.lb_cg_position[0]['foreground'] = 'white'
-            self.lb_cg_position[1].text = f'Nan'
+            self.lb_cg_position[1].text = f'NaN'
             self.lb_cg_position[1]['foreground'] = 'white'
             return None
 

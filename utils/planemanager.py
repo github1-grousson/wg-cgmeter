@@ -48,7 +48,7 @@ class Plane(CoordinateConverter):
             origin2cgyrange (tuple): The range of the Y distance from the origin to the center of gravity in mm
             edge2mainwheels (int): The distance from the leading edge to the main wheels in mm
         """
-        self.name = name
+        self.__name = name
         self.wheelbase = wheelbase
         self.wheeltrack = wheeltrack
         self.edge2mainwheels = edge2mainwheels
@@ -64,6 +64,10 @@ class Plane(CoordinateConverter):
             if var in data:
                 del data[var]
         return data
+
+    @property
+    def name(self) -> str:
+        return self.__name
 
     @property
     def cgx_range(self) -> tuple[int,int]:
@@ -160,7 +164,7 @@ class Plane(CoordinateConverter):
             raise e
 
     def __str__(self):
-        return f'Plane {self.name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2mainwheels {self.edge2mainwheels} mm, edge2cgX {self.edge2cgxrange} mm, origin2cgY {self.origin2cgyrange} mm'
+        return f'Plane {self.__name} has wheelbase {self.wheelbase} mm, wheeltrack {self.wheeltrack} mm, edge2mainwheels {self.edge2mainwheels} mm, edge2cgX {self.edge2cgxrange} mm, origin2cgY {self.origin2cgyrange} mm'
 
 class PlaneManager:
     """The plane manager class, it is a singleton
