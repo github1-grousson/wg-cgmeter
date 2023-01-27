@@ -36,17 +36,19 @@ APP_NAME = "CGMeter"
 APP_VERSION = "0.3.0"
 APP_AUTHOR = "Wilfried Grousson"
 APP_CONFIG_DIR = "config"
-APP_CG_CONFIG_NAME = "cgconfig.json"
 LOG_LEVEL = logging.DEBUG
 EMULATE_HX711 = False
 APP_ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-APP_CG_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,APP_CG_CONFIG_NAME)
+APP_CG_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"cgconfig.json")
+APP_PLANES_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"planes.json")
 
-ORIGIN = (244, 199)
-RWHEEL = (225, 99)
-LWHEEL = (225, 299)
-TWHEEL = (643, 199)
-NOSE = (80, 199)
+ORIGIN = (244, 199) #this is the wing leading edge screen coordinates
+RWHEEL = (225, 99)  #this is right wheel screen coordinates
+LWHEEL = (225, 299) #this is left wheel screen coordinates
+TWHEEL = (643, 199) #this is tail wheel screen coordinates
+NOSE = (80, 199)    #this is nose screen coordinates
+
+SCREEN_COORDINATES = {'ORIGIN': ORIGIN, 'RWHEEL': RWHEEL, 'LWHEEL': LWHEEL, 'TWHEEL': TWHEEL, 'NOSE': NOSE}
 
 """
 RWHEEL = (225-244, 99-199)

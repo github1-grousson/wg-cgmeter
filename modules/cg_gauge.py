@@ -53,6 +53,7 @@ class CGModule ():
         self.__dout_pin = 0
         self.__pd_sck_pin = 0
         self.__position = [0.0,0.0]
+        self.__last_value = 0.0
         self.__logger = logging.getLogger(constants.APP_NAME)
         self.__initialized = False
        
@@ -216,14 +217,18 @@ class CGModule ():
         Returns:
             float: the weight in grams
         """
-        result = 0.0
         try:
             if not self.__initialized:
                 raise Exception("not initialized")
-                
+            
             result = self.__hx.get_weight_mean(readings)
+            if result is False:
+                self.__logger.debug(f'Mean value from HX711 (module {self.__name}) return false')
+                
+            else:
+                self.__last_value = result
 
         except BaseException as e:
             self.__logger.error("Error getting CGModule(%s) weight: %s", self.__name,  str(e))
         
-        return result
+        return self.__last_value

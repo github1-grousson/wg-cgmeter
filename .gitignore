@@ -137,3 +137,4 @@ dmypy.json
 
 #bakcup files
 .bak/
+config/planes.json

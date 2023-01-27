@@ -78,6 +78,8 @@ class CGMeter(Singleton) :
             for module in self.__modules:
                 if module.initialized:
                     values[module.name] = module.getWeight(6)
+                    if values[module.name] is False:
+                        print("Error reading module: " + module.name)
             
             callback(values)
             time.sleep(0.1)
