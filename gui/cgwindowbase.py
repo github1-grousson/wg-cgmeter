@@ -57,11 +57,6 @@ class CGWindowBase:
         
         self.content_frame = tk.Frame(self.mainwindow)
         self.content_frame.configure(background="#252526")
-        # self.img = tk.Label(self.content_frame)
-        # self.img_top_view_800 = tk.PhotoImage(file="gui/top_view_800.png")
-        # self.img.configure(image=self.img_top_view_800, borderwidth=0)
-        # self.img.pack(side="top")
-        logging.getLogger(const.APP_NAME).debug(f"Loading image {os.path.join(const.APP_ROOT_FOLDER,'gui','top_view_800.png')}")
         self.img = Image.open(os.path.join(const.APP_ROOT_FOLDER,"gui","top_view_800.png"))
         self.sketch = ImageTk.PhotoImage(self.img)
         self.canvas = tk.Canvas(self.content_frame, width=self.img.size[0], height=self.img.size[1])
@@ -76,7 +71,7 @@ class CGWindowBase:
             self.lb_cg_position[i].configure(highlightbackground="#007fd4", highlightthickness=1, text=f'{0} mm')
         
         self.lb_cg_position[0].place(anchor="w", relx=0, rely=0, x=const.ORIGIN[0], y=20, width=200)
-        self.lb_cg_position[1].place(anchor="w", relx=0, rely=0.5, width=80)
+        self.lb_cg_position[1].place(anchor="w", relx=0, rely=0.5, width=75)
 
         self.lb_weights = {}
         self.lb_weights['total'] = wk.Label(self.content_frame)
