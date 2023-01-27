@@ -31,50 +31,69 @@ SOFTWARE.
 
 import tkinter as tk
 
-class DrawerHelper :
-    """Helper to draw some shapes on a canvas"""
-    
-    @staticmethod
-    def draw_circle(canvas : tk.Canvas, center : tuple[int,int], radius = 10, color="white", width=1) :
-        """Draw a circle on the canvas
+# class circle to draw a circle on a given canvas with a given center and radius
+class Circle:
+    """Circle class to draw a circle on a canvas"""
 
+    _x_correction = 0
+    _y_correction = -3
+
+    def __init__(self, canvas : tk.Canvas, center : tuple[int,int], radius = 10, color="white", width=1):
+        """Constructor
+        
         Args:
-            canvas (tk.Canvas): The canvas
-            center (tuple[int,int]): The center of the circle
-            radius (int, optional): The radius of the circle. Defaults to 10.
-            color (str, optional): The color of the circle. Defaults to "white".
-            width (int, optional): The width of the circle. Defaults to 1.
-
-        Returns:
-            [int]: [the object ID of the circle]
+            canvas (tk.Canvas): canvas to draw on
+            center (tuple[int,int]): center of the circle
+            radius (int, optional): radius of the circle. Defaults to 10.
+            color (str, optional): color of the circle. Defaults to "white".
+            width (int, optional): width of the circle. Defaults to 1.
         """
-        if center is not None :
-            x = center[0]
-            y = center[1]
-            return canvas.create_oval(x - radius, y - radius, x + radius, y + radius, outline=color, fill=color, width=width)
+        self.canvas = canvas
+        self.center = center
+        self.radius = radius
+        self.color = color
+        self.width = width
+        self.id = None
+
+    def draw(self):
+        """Draw the circle on the canvas"""
+        if self.center is not None and self.canvas is not None:
+            x = self.center[0] + Circle._x_correction
+            y = self.center[1] + Circle._y_correction
+            self.id = self.canvas.create_oval(x - self.radius, y - self.radius, x + self.radius, y + self.radius, outline=self.color, fill=self.color, width=self.width)
         else :
-            return None
+            self.id = None
+            raise Exception(f'Cannot draw circle with center {self.center} on canvas {self.canvas}')
 
-
-    @staticmethod
-    def move_item_to(canvas : tk.Canvas, item_id, center : tuple[int,int]) :
-        """Move an item to a new center
+    def move_to(self, center : tuple[int,int]):
+        """Move the circle to a new center
 
         Args:
-            canvas (tk.Canvas): The canvas
-            item_id (Any): The canvas object ID
             center (tuple[int,int]): The new center
         """
-        if center is not None and item_id is not None:
-            canvas.moveto(item_id, center[0], center[1])
-        
-    @staticmethod
-    def change_item_color(canvas : tk.Canvas, item_id, color) :
-        """Change the color of an item
+        try:
+            if center is not None and self.id is not None:
+                x = center[0] + Circle._x_correction
+                y = center[1] + Circle._y_correction
+                self.canvas.moveto(self.id, x - self.radius, y - self.radius)
+        except Exception as e:
+            raise e
+
+    def change_color(self, color):
+        """Change the color of the circle
 
         Args:
-            canvas (tk.Canvas): The canvas
-            item_id (Any): The canvas object ID
             color (str): The new color
         """
-        canvas.itemconfig(item_id, fill=color, outline=color)
+        if self.id is not None:
+            self.canvas.itemconfig(self.id, fill=color, outline=color)
+
+    def delete(self):
+        """Delete the circle from the canvas"""
+        if self.id is not None:
+            self.canvas.delete(self.id)
+    
+
+
+if __name__ == "__main__":
+    raise Exception("This is a module, not a program. It should not be run directly.")
