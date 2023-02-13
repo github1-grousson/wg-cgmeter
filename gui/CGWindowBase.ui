@@ -92,6 +92,64 @@
           <property name="pady">5</property>
           <property name="side">top</property>
         </layout>
+        <child>
+          <object class="tk.Frame" id="model_frame" named="True">
+            <property name="background">#252526</property>
+            <layout manager="place">
+              <property name="anchor">ne</property>
+              <property name="relx">1.0</property>
+            </layout>
+            <child>
+              <object class="tk.Label" id="lb_model" named="True">
+                <property name="background">#252526</property>
+                <property name="font">{Arial} 10 {italic}</property>
+                <property name="foreground">white</property>
+                <property name="text" translatable="yes">the model name</property>
+                <property name="textvariable">string:lb_model_txt</property>
+                <layout manager="pack">
+                  <property name="side">left</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="tk.Menubutton" id="menu_btn_model" named="True">
+                <property name="activebackground">#252526</property>
+                <property name="activeforeground">#0e639c</property>
+                <property name="background">#252526</property>
+                <property name="font">{Wingdings} 12 {}</property>
+                <property name="foreground">white</property>
+                <property name="highlightthickness">0</property>
+                <property name="relief">flat</property>
+                <property name="text" translatable="yes">▼</property>
+                <layout manager="pack">
+                  <property name="side">right</property>
+                </layout>
+                <child>
+                  <object class="tk.Menu" id="menu_model" named="True">
+                    <property name="activebackground">#0e639c</property>
+                    <property name="activeborderwidth">0</property>
+                    <property name="activeforeground">white</property>
+                    <property name="background">#252526</property>
+                    <property name="borderwidth">0</property>
+                    <property name="font">{Arial} 10 {}</property>
+                    <property name="foreground">white</property>
+                    <property name="selectcolor">#2a2d2e</property>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="command1">
+                        <property name="label" translatable="yes">Model 1</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="tk.Menuitem.Command" id="command2">
+                        <property name="label" translatable="yes">Model 2</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
       </object>
     </child>
     <child>
