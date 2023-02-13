@@ -1,0 +1,16 @@
+[
+    {
+        "name": "Plane_Name",
+        "wheelbase": 800,
+        "wheeltrack": 250,
+        "edge2mainwheels": -10,
+        "edge2cgxrange": [
+            90,
+            120
+        ],
+        "origin2cgyrange": [
+            -20,
+            20
+        ]
+    }
+]
