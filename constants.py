@@ -33,7 +33,7 @@ import os
 import logging
 
 APP_NAME = "CGMeter"
-APP_VERSION = "0.3.0"
+APP_VERSION = "1.0.0"
 APP_AUTHOR = "Wilfried Grousson"
 APP_CONFIG_DIR = "config"
 LOG_LEVEL = logging.DEBUG
@@ -47,7 +47,6 @@ RWHEEL = (225, 100)  #this is right wheel screen coordinates
 LWHEEL = (225, 300) #this is left wheel screen coordinates
 TWHEEL = (660, 204) #this is tail wheel screen coordinates
 NOSE = (80, 204)    #this is nose screen coordinates
-
 SCREEN_COORDINATES = {'ORIGIN': ORIGIN, 'RWHEEL': RWHEEL, 'LWHEEL': LWHEEL, 'TWHEEL': TWHEEL, 'NOSE': NOSE}
 
 if __name__ == "__main__":
