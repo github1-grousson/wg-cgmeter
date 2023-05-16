@@ -32,21 +32,29 @@ SOFTWARE.
 import os
 import logging
 
-APP_NAME = "CGMeter"
-APP_VERSION = "1.0.0"
-APP_AUTHOR = "Wilfried Grousson"
-APP_CONFIG_DIR = "config"
-LOG_LEVEL = logging.DEBUG
-EMULATE_HX711 = False
-APP_ROOT_FOLDER = os.path.dirname(os.path.abspath(__file__))
-APP_CG_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"cgconfig.json")
+APP_NAME    = "CGMeter"
+APP_VERSION = "1.0.1"
+APP_AUTHOR  = "Wilfried Grousson"
+
+###
+# Constants below can be changed by user if needed
+###
+LOG_LEVEL      = logging.DEBUG      # logging level : DEBUG, INFO, WARNING, ERROR, CRITICAL
+LOG_CONSOLE    = False              # True to log to console, False to log to file only
+EMULATE_HX711  = False              # True to emulate HX711, False to use GPIO
+MAIN_PLANE     = 'ExtraNG'          # which plane do you want to use as default
+
+# do not change constants below this line
+APP_ROOT_FOLDER     = os.path.dirname(os.path.abspath(__file__))
+APP_CONFIG_DIR      = "config"
+APP_CG_FILENAME     = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"cgconfig.json")
 APP_PLANES_FILENAME = os.path.join(APP_ROOT_FOLDER,APP_CONFIG_DIR,"planes.json")
 
-ORIGIN = (244, 204) #this is the wing leading edge screen coordinates
-RWHEEL = (225, 100)  #this is right wheel screen coordinates
-LWHEEL = (225, 300) #this is left wheel screen coordinates
-TWHEEL = (660, 204) #this is tail wheel screen coordinates
-NOSE = (80, 204)    #this is nose screen coordinates
+ORIGIN = (244, 204)  # this is the wing leading edge screen coordinates
+RWHEEL = (225, 100)  # this is right wheel screen coordinates
+LWHEEL = (225, 300)  # this is left wheel screen coordinates
+TWHEEL = (660, 204)  # this is tail wheel screen coordinates
+NOSE = (80, 204)     # this is nose screen coordinates
 SCREEN_COORDINATES = {'ORIGIN': ORIGIN, 'RWHEEL': RWHEEL, 'LWHEEL': LWHEEL, 'TWHEEL': TWHEEL, 'NOSE': NOSE}
 
 if __name__ == "__main__":
