@@ -35,7 +35,7 @@ import logging
 import logging.handlers
 
 ''' Personal imports '''
-from constants import APP_NAME, LOG_LEVEL, APP_VERSION, EMULATE_HX711
+from constants import APP_NAME, LOG_LEVEL, LOG_CONSOLE, APP_VERSION, EMULATE_HX711
 from gui.cgmainapp import CGMainApp
 
 '''GPIO import'''
@@ -49,10 +49,11 @@ export DISPLAY=:0;
 def __init_logging():
         logger = logging.getLogger(APP_NAME)
         logger.setLevel(LOG_LEVEL)
-        stream_handler = logging.StreamHandler()
-        stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s|%(module)s - %(levelname)s - %(message)s'))
-        stream_handler.setLevel(LOG_LEVEL)
-        logger.addHandler(stream_handler)
+        if LOG_CONSOLE:
+            stream_handler = logging.StreamHandler()
+            stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s|%(module)s - %(levelname)s - %(message)s'))
+            stream_handler.setLevel(LOG_LEVEL)
+            logger.addHandler(stream_handler)
 
         log_file = os.path.join(os.path.realpath(os.path.dirname(__file__)), "log")
         if not os.path.exists(log_file):
@@ -60,7 +61,6 @@ def __init_logging():
 
         needRoll = os.path.exists(log_file + "/cgmeter.log")
         file_handler = logging.handlers.RotatingFileHandler(log_file + "/cgmeter.log", backupCount=5)
-        
         file_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s|%(module)s - %(levelname)s - %(message)s'))
         file_handler.setLevel(LOG_LEVEL)
         file_handler.doRollover() if needRoll else None
