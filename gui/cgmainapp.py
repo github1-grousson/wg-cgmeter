@@ -35,7 +35,7 @@ import logging.handlers
 
 ''' Personal imports '''
 import wgkinter as wk
-from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME
+from constants import APP_NAME, APP_VERSION, APP_CG_FILENAME, MAIN_PLANE
 from gui.cgwindowbase import CGWindowBase
 from modules.cg_meter import CGMeter
 from gui.cgcalibrationwindow import CGCalibrationWindow
@@ -69,6 +69,14 @@ class CGMainApp(CGWindowBase):
         self.message = "Loading default plane..."
         #initalize the plane manager & UI
         PlaneManager().load()
+        try:
+            PlaneManager().set_current_plane_by_name(MAIN_PLANE)
+        except ValueError as ve:
+            self.__logger.error("Error loading plane: " + str(ve))
+            self.message = "Error loading  plane: " + MAIN_PLANE +", loading default"            
+        except BaseException as e:
+            self.__logger.error("Error loading plane: " + str(e))
+
         self.__update_UI()
 
         self.message = "Initializing CG gauges..."
