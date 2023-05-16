@@ -89,3 +89,4 @@ The plane config is formed like this :
 * 0.2.0 : new UI based on tkinter and wgkinter, shows the different weights
 * 0.3.0 : display the CG position in X and Y axis based on the plane config file (confif/planes.json)
 * 1.0.0 : first MVP release
+* 1.0.1 : add constant to load default plane and make console log optional
